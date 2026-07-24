@@ -11,6 +11,7 @@ from brokers.broker import Broker
 from models.position import Position
 from models.trade_order import TradeOrder
 from portfolio.simulation_account import SimulationAccount
+from signals.signal_types import SignalType
 
 
 class PaperBroker(Broker):
@@ -27,6 +28,18 @@ class PaperBroker(Broker):
     def execute(self, order: TradeOrder) -> Position:
         """
         Execute a trade order.
+        """
+
+        if order.action == SignalType.BUY:
+            return self._execute_buy(order)
+
+        raise ValueError(
+            f"Unsupported order action: {order.action}"
+        )
+
+    def _execute_buy(self, order: TradeOrder) -> Position:
+        """
+        Execute a BUY order.
         """
 
         cost = order.value
