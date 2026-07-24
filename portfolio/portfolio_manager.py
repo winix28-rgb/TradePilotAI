@@ -4,88 +4,62 @@ TradePilotAI
 Portfolio Manager
 ===========================================================
 
-Maintains portfolio cash and open positions.
+Manages the trading account and open positions.
 """
 
-from datetime import datetime
-
 from models.position import Position
+from portfolio.account import Account
 
 
 class PortfolioManager:
     """
-    Maintains portfolio state.
+    Manages account and open positions.
     """
 
-    def __init__(self, starting_cash: float):
+    def __init__(self, account: Account):
 
-        self.starting_cash = starting_cash
-        self.cash = starting_cash
-
-        self.positions: dict[str, Position] = {}
+        self._account = account
+        self._positions: dict[str, Position] = {}
 
     @property
-    def invested(self) -> float:
-        """
-        Total amount currently invested.
-        """
-        return sum(position.cost for position in self.positions.values())
+    def account(self) -> Account:
+        return self._account
+
+    @property
+    def positions(self) -> dict[str, Position]:
+        return self._positions
+
+    def add_position(self, position: Position) -> None:
+
+        if position.symbol in self._positions:
+            raise ValueError(f"{position.symbol} already exists.")
+
+        self._positions[position.symbol] = position
+
+    def remove_position(self, symbol: str) -> None:
+
+        if symbol not in self._positions:
+            raise ValueError(f"{symbol} not found.")
+
+        del self._positions[symbol]
+
+    def has_position(self, symbol: str) -> bool:
+
+        return symbol in self._positions
+
+    def get_position(self, symbol: str) -> Position | None:
+
+        return self._positions.get(symbol)
+
+    @property
+    def portfolio_value(self) -> float:
+
+        return sum(
+            position.market_value
+            for position in self._positions.values()
+        )
 
     @property
     def total_value(self) -> float:
-        """
-        Cash + invested capital.
-        """
-        return self.cash + self.invested
 
-    def can_afford(
-        self,
-        shares: int,
-        price: float,
-    ) -> bool:
-
-        return (shares * price) <= self.cash
-
-    def buy(
-        self,
-        symbol: str,
-        shares: int,
-        price: float,
-    ) -> bool:
-        """
-        Purchase shares.
-        """
-
-        cost = shares * price
-
-        if cost > self.cash:
-            return False
-
-        self.cash -= cost
-
-        self.positions[symbol] = Position(
-            symbol=symbol,
-            entry_date=datetime.now(),
-            entry_price=price,
-            shares=shares,
-        )
-
-        return True
-
-    def sell(
-        self,
-        symbol: str,
-        price: float,
-    ) -> bool:
-        """
-        Sell an entire position.
-        """
-
-        if symbol not in self.positions:
-            return False
-
-        position = self.positions.pop(symbol)
-
-        self.cash += position.shares * price
-
-        return True
+        return self.account.cash + self.portfolio_value
