@@ -4,22 +4,24 @@ TradePilotAI
 Portfolio Manager
 ===========================================================
 
-Manages the trading account and open positions.
+Manages the trading account, open positions and completed trades.
 """
 
 from models.position import Position
+from models.trade import Trade
 from portfolio.account import Account
 
 
 class PortfolioManager:
     """
-    Manages the trading account and open positions.
+    Manages the trading account, open positions and completed trades.
     """
 
     def __init__(self, account: Account):
 
         self._account = account
         self._positions: dict[str, Position] = {}
+        self._trade_history: list[Trade] = []
 
     @property
     def account(self) -> Account:
@@ -29,9 +31,16 @@ class PortfolioManager:
     def positions(self) -> dict[str, Position]:
         return self._positions
 
+    @property
+    def trade_history(self) -> list[Trade]:
+        """
+        Return a copy of completed trades.
+        """
+        return self._trade_history.copy()
+
     def add_position(self, position: Position) -> None:
         """
-        Add a new position to the portfolio.
+        Add a new position.
         """
 
         if self.has_position(position.symbol):
@@ -41,13 +50,20 @@ class PortfolioManager:
 
     def remove_position(self, symbol: str) -> Position:
         """
-        Remove and return a position.
+        Remove a position.
         """
 
         if not self.has_position(symbol):
             raise ValueError(f"{symbol} not found.")
 
         return self._positions.pop(symbol)
+
+    def record_trade(self, trade: Trade) -> None:
+        """
+        Record a completed trade.
+        """
+
+        self._trade_history.append(trade)
 
     def has_position(self, symbol: str) -> bool:
         """

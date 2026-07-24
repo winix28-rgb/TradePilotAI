@@ -9,8 +9,10 @@ Coordinates the execution of approved trade orders.
 
 from brokers.broker import Broker
 from models.position import Position
+from models.trade import Trade
 from models.trade_order import TradeOrder
 from portfolio.portfolio_manager import PortfolioManager
+from signals.signal_types import SignalType
 
 
 class TradeEngine:
@@ -34,9 +36,12 @@ class TradeEngine:
     def portfolio(self) -> PortfolioManager:
         return self._portfolio
 
-    def execute(self, order: TradeOrder) -> Position:
+    def execute(
+        self,
+        order: TradeOrder,
+    ) -> Position | Trade:
         """
-        Execute an approved BUY order.
+        Execute an approved trade order.
         """
 
         if not isinstance(order, TradeOrder):
@@ -44,8 +49,31 @@ class TradeEngine:
                 "execute() expects a TradeOrder."
             )
 
-        position = self.broker.execute(order)
+        if order.action == SignalType.BUY:
 
-        self.portfolio.add_position(position)
+            position = self.broker.execute(order)
 
-        return position
+            self.portfolio.add_position(position)
+
+            return position
+
+        if order.action == SignalType.SELL:
+
+            position = self.portfolio.get_position(order.symbol)
+
+            if position is None:
+                raise ValueError(
+                    f"No open position exists for {order.symbol}."
+                )
+
+            trade = self.broker.execute(order, position)
+
+            self.portfolio.remove_position(order.symbol)
+
+            self.portfolio.record_trade(trade)
+
+            return trade
+
+        raise ValueError(
+            f"Unsupported order action: {order.action}"
+        )
