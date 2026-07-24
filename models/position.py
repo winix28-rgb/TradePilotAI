@@ -2,38 +2,29 @@
 ===========================================================
 TradePilotAI
 Position Model
-Version 3.0
 ===========================================================
 
-Represents a currently open position.
+Represents an OPEN position in the portfolio.
 """
 
 from dataclasses import dataclass
 from datetime import datetime
 
 
-@dataclass
+@dataclass(slots=True)
 class Position:
     """
-    Represents an open trading position.
+    Represents an open position.
     """
 
-    ticker: str
-
-    direction: str
-
-    quantity: int
-
-    entry_time: datetime
-
+    symbol: str
+    entry_date: datetime
     entry_price: float
+    shares: int
 
-    stop_loss: float
-
-    current_price: float = 0.0
-
-    unrealised_profit: float = 0.0
-
-    risk: float = 0.0
-
-    is_open: bool = True
+    @property
+    def cost(self) -> float:
+        """
+        Original amount invested.
+        """
+        return self.entry_price * self.shares
