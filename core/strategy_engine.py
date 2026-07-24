@@ -4,35 +4,32 @@ TradePilotAI
 Strategy Engine
 ===========================================================
 
-Runs any strategy that inherits from BaseStrategy.
+Purpose
+-------
+Runs a trading strategy over historical market data and
+passes all signals to the Trade Recorder.
+
+Responsibilities
+----------------
+- Execute strategy.
+- Feed signals to Trade Recorder.
+- Return completed trades.
 """
 
-from typing import List
 import pandas as pd
 
-from signals.signal_types import SignalType
+from backtesting.trade_recorder import TradeRecorder
 from strategies.base_strategy import BaseStrategy
 
 
 class StrategyEngine:
-    """
-    Executes a strategy over historical market data.
-    """
 
     def __init__(self, strategy: BaseStrategy):
+
         self.strategy = strategy
+        self.recorder = TradeRecorder()
 
-    def run(self, data: pd.DataFrame) -> List[SignalType]:
-        """
-        Run the strategy over the supplied market data.
-
-        Returns
-        -------
-        List[SignalType]
-            One signal per market bar.
-        """
-
-        signals = []
+    def run(self, data: pd.DataFrame):
 
         for i in range(1, len(data)):
 
@@ -41,6 +38,10 @@ class StrategyEngine:
 
             signal = self.strategy.on_bar(previous, current)
 
-            signals.append(signal)
+            self.recorder.process_signal(
+                signal=signal,
+                date=current.name,
+                price=current["Close"],
+            )
 
-        return signals
+        return self.recorder.trades

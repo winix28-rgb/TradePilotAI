@@ -2,42 +2,44 @@
 ===========================================================
 TradePilotAI
 Trade Model
-Version 3.0
 ===========================================================
 
-Represents a completed or open trade.
+Represents one completed trade.
 """
 
 from dataclasses import dataclass
 from datetime import datetime
 
 
-@dataclass
+@dataclass(slots=True)
 class Trade:
     """
-    Stores all information relating to a trade.
+    Represents a completed trade.
     """
 
-    ticker: str
+    symbol: str
 
-    direction: str
+    entry_date: datetime
+    exit_date: datetime
 
-    entry_time: datetime | None = None
-    entry_price: float | None = None
+    entry_price: float
+    exit_price: float
 
-    stop_loss: float | None = None
-
-    exit_time: datetime | None = None
-    exit_price: float | None = None
+    quantity: float = 1.0
 
     exit_reason: str = ""
 
-    profit: float = 0.0
+    @property
+    def profit(self) -> float:
+        return (self.exit_price - self.entry_price) * self.quantity
 
-    quantity: int = 0
+    @property
+    def return_percent(self) -> float:
+        return (
+            (self.exit_price - self.entry_price)
+            / self.entry_price
+        ) * 100
 
-    risk: float = 0.0
-
-    reward: float = 0.0
-
-    status: str = "OPEN"
+    @property
+    def duration_days(self) -> int:
+        return (self.exit_date - self.entry_date).days
