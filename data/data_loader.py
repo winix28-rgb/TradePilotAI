@@ -2,7 +2,6 @@
 ===========================================================
 TradePilotAI
 Data Loader
-Version 3.0
 ===========================================================
 
 Loads historical market data from supported sources.
@@ -22,28 +21,14 @@ class DataLoader:
     @staticmethod
     def load_yahoo(
         ticker: str,
-        start_date: str,
-        end_date: str,
+        start_date: str = "2015-01-01",
+        end_date: str = "2025-12-31",
     ) -> pd.DataFrame:
         """
         Load historical price data from Yahoo Finance.
-
-        Parameters
-        ----------
-        ticker : str
-            Market symbol (e.g. RR.L)
-
-        start_date : str
-            Start date (YYYY-MM-DD)
-
-        end_date : str
-            End date (YYYY-MM-DD)
-
-        Returns
-        -------
-        pandas.DataFrame
-            Historical OHLCV price data.
         """
+
+        print(f"Downloading {ticker}...")
 
         data = yf.download(
             ticker,
@@ -56,18 +41,29 @@ class DataLoader:
         if data.empty:
             raise ValueError(f"No data returned for {ticker}")
 
+        # -------------------------------------------------
+        # Flatten MultiIndex columns returned by newer
+        # versions of yfinance.
+        # -------------------------------------------------
+
+        if isinstance(data.columns, pd.MultiIndex):
+            data.columns = data.columns.get_level_values(0)
+
+        # Keep only the columns we need
+        data = data[["Open", "High", "Low", "Close", "Volume"]]
+
+        print(f"Downloaded {len(data)} price bars")
+
         return data
 
     @staticmethod
     def load_csv(filename: str) -> pd.DataFrame:
         """
-        Load market data from a CSV file.
+        Load market data from CSV.
         """
 
-        data = pd.read_csv(
+        return pd.read_csv(
             filename,
             index_col=0,
             parse_dates=True,
         )
-
-        return data

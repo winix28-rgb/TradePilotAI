@@ -1,55 +1,72 @@
 """
 ===========================================================
 TradePilotAI
-Main Application
-Version 3.0
+Main
 ===========================================================
-
-Entry point for the application.
 """
 
-from config import settings
 from data.data_loader import DataLoader
 from indicators.indicator_engine import IndicatorEngine
+from strategies.rsi_mean_reversion import RSIMeanReversionStrategy
+from core.strategy_engine import StrategyEngine
+from signals.signal_types import SignalType
 
 
 def main():
-    """
-    Main application entry point.
-    """
 
     print("=" * 60)
     print("TradePilotAI")
     print("=" * 60)
 
-    ticker = "RR.L"
+    print("\nLoading market data...")
 
-    print(f"\nLoading data for {ticker}...")
+    data = DataLoader.load_yahoo("RR.L")
 
-    data = DataLoader.load_yahoo(
-        ticker=ticker,
-        start_date=settings.START_DATE,
-        end_date=settings.END_DATE,
-    )
-
-    print(f"Loaded {len(data)} candles")
+    print(f"Loaded {len(data)} bars")
 
     print("\nCalculating indicators...")
 
     data = IndicatorEngine.add_indicators(data)
 
-    print("\nLatest Market Data\n")
+    print("\nColumns:")
+    print(data.columns.tolist())
 
-    print(
-        data[
-            [
-                "Close",
-                "EMA12",
-                "EMA26",
-                "RSI",
-            ]
-        ].tail()
-    )
+    print("\nLast five rows:")
+    print(data.tail())
+
+    print("\nRunning strategy...\n")
+
+    strategy = RSIMeanReversionStrategy()
+
+    engine = StrategyEngine(strategy)
+
+    signals = engine.run(data)
+
+    buy = 0
+    sell = 0
+
+    for i, signal in enumerate(signals, start=1):
+
+        if signal == SignalType.BUY:
+
+            buy += 1
+
+            row = data.iloc[i]
+
+            print(f"BUY  {row.name.date()}  {row.Close:.2f}")
+
+        elif signal == SignalType.SELL:
+
+            sell += 1
+
+            row = data.iloc[i]
+
+            print(f"SELL {row.name.date()}  {row.Close:.2f}")
+
+    print("\nFinished")
+
+    print(f"BUY Signals : {buy}")
+    print(f"SELL Signals: {sell}")
 
 
 if __name__ == "__main__":
