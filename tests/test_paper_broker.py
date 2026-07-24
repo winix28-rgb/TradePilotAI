@@ -1,32 +1,34 @@
-from brokers.paper_broker import PaperBroker
-from portfolio.simulation_account import SimulationAccount
+"""
+===========================================================
+TradePilotAI
+Paper Broker Tests
+===========================================================
+"""
+
+from models.trade_order import TradeOrder
 from signals.signal_types import SignalType
-from signals.trade_signal import TradeSignal
 
-account = SimulationAccount(100000)
 
-broker = PaperBroker(account)
+def test_execute_buy_order(broker, account):
+    """
+    Executing an order should create a position and
+    withdraw the correct amount of cash.
+    """
 
-signal = TradeSignal(
-    symbol="RR.L",
-    action=SignalType.BUY,
-    entry_price=250,
-    stop_loss=240,
-    take_profit=280,
-    strategy="RSI Mean Reversion",
-)
+    order = TradeOrder(
+        symbol="RR.L",
+        action=SignalType.BUY,
+        quantity=100,
+        price=250,
+        stop_loss=240,
+        take_profit=280,
+        strategy="RSI",
+    )
 
-position = broker.buy(
-    signal=signal,
-    quantity=100,
-)
+    position = broker.execute(order)
 
-print("Position Created")
-print("--------------------------")
-print(position)
+    assert position.symbol == "RR.L"
+    assert position.quantity == 100
+    assert position.entry_price == 250
 
-print()
-
-print("Remaining Cash")
-print("--------------------------")
-print(account.cash)
+    assert account.cash == 75000

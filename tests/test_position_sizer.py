@@ -1,15 +1,71 @@
+"""
+===========================================================
+TradePilotAI
+Position Sizer Tests
+===========================================================
+"""
+
 from portfolio.position_sizer import PositionSizer
 
-sizer = PositionSizer(
-    account_size=100000,
-    risk_per_trade=0.01,
-)
 
-shares = sizer.calculate_position_size(
-    entry_price=250,
-    stop_price=245,
-)
+def test_maximum_risk():
+    """
+    Maximum risk should equal account size × risk percentage.
+    """
 
-print(f"Maximum Risk : £{sizer.maximum_risk:,.2f}")
-print(f"Shares        : {shares}")
-print(f"Position Size : £{sizer.position_value(shares, 250):,.2f}")
+    sizer = PositionSizer(
+        account_size=100000,
+        risk_per_trade=0.01,
+    )
+
+    assert sizer.maximum_risk == 1000
+
+
+def test_position_size():
+    """
+    Position size should be calculated correctly.
+    """
+
+    sizer = PositionSizer(
+        account_size=100000,
+        risk_per_trade=0.01,
+    )
+
+    shares = sizer.calculate_position_size(
+        entry_price=250,
+        stop_price=245,
+    )
+
+    assert shares == 200
+
+
+def test_zero_risk_returns_zero():
+    """
+    Zero stop distance should return zero shares.
+    """
+
+    sizer = PositionSizer(
+        account_size=100000,
+        risk_per_trade=0.01,
+    )
+
+    assert (
+        sizer.calculate_position_size(
+            entry_price=100,
+            stop_price=100,
+        )
+        == 0
+    )
+
+
+def test_position_value():
+    """
+    Position value should equal shares × price.
+    """
+
+    sizer = PositionSizer(account_size=100000)
+
+    assert sizer.position_value(
+        shares=100,
+        entry_price=250,
+    ) == 25000

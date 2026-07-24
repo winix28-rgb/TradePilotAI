@@ -10,24 +10,21 @@ Defines the behaviour of every broker implementation.
 from abc import ABC, abstractmethod
 
 from models.position import Position
-from signals.trade_signal import TradeSignal
+from models.trade_order import TradeOrder
 
 
 class Broker(ABC):
     """
     Abstract broker interface.
+
+    Every broker implementation (paper or live) is responsible
+    for executing an approved TradeOrder and returning the
+    resulting Position.
     """
 
     @abstractmethod
-    def buy(self, signal: TradeSignal, quantity: float) -> Position:
+    def execute(self, order: TradeOrder) -> Position:
         """
-        Execute a buy order and return the opened position.
+        Execute a trade order and return the opened position.
         """
-        pass
-
-    @abstractmethod
-    def sell(self, symbol: str) -> Position:
-        """
-        Close a position and return it.
-        """
-        pass
+        raise NotImplementedError

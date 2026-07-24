@@ -9,41 +9,36 @@ Simulates order execution.
 
 from brokers.broker import Broker
 from models.position import Position
+from models.trade_order import TradeOrder
 from portfolio.simulation_account import SimulationAccount
-from signals.trade_signal import TradeSignal
 
 
 class PaperBroker(Broker):
     """
-    Simple paper trading broker.
+    Paper trading broker.
+
+    Executes approved TradeOrder objects and returns the
+    resulting Position.
     """
 
     def __init__(self, account: SimulationAccount):
-
         self.account = account
 
-    def buy(
-        self,
-        signal: TradeSignal,
-        quantity: float,
-    ) -> Position:
+    def execute(self, order: TradeOrder) -> Position:
+        """
+        Execute a trade order.
+        """
 
-        cost = signal.entry_price * quantity
+        cost = order.value
 
         self.account.withdraw(cost)
 
         return Position(
-            symbol=signal.symbol,
-            quantity=quantity,
-            entry_price=signal.entry_price,
-            current_price=signal.entry_price,
-            stop_loss=signal.stop_loss,
-            take_profit=signal.take_profit,
-            strategy=signal.strategy,
-        )
-
-    def sell(self, symbol: str) -> Position:
-
-        raise NotImplementedError(
-            "Sell functionality will be implemented in the next sprint."
+            symbol=order.symbol,
+            quantity=order.quantity,
+            entry_price=order.price,
+            current_price=order.price,
+            stop_loss=order.stop_loss,
+            take_profit=order.take_profit,
+            strategy=order.strategy,
         )

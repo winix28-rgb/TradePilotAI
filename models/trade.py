@@ -4,7 +4,7 @@ TradePilotAI
 Trade Model
 ===========================================================
 
-Represents one completed trade.
+Represents a completed trade.
 """
 
 from dataclasses import dataclass
@@ -19,27 +19,50 @@ class Trade:
 
     symbol: str
 
-    entry_date: datetime
-    exit_date: datetime
+    quantity: float
 
     entry_price: float
     exit_price: float
 
-    quantity: float = 1.0
+    entry_date: datetime
+    exit_date: datetime
 
-    exit_reason: str = ""
+    strategy: str = ""
+
+    @property
+    def cost(self) -> float:
+        """
+        Original capital committed.
+        """
+        return self.entry_price * self.quantity
+
+    @property
+    def proceeds(self) -> float:
+        """
+        Cash received when the position was closed.
+        """
+        return self.exit_price * self.quantity
 
     @property
     def profit(self) -> float:
-        return (self.exit_price - self.entry_price) * self.quantity
+        """
+        Realised profit or loss.
+        """
+        return self.proceeds - self.cost
 
     @property
     def return_percent(self) -> float:
-        return (
-            (self.exit_price - self.entry_price)
-            / self.entry_price
-        ) * 100
+        """
+        Percentage return.
+        """
+        if self.cost == 0:
+            return 0.0
+
+        return (self.profit / self.cost) * 100
 
     @property
-    def duration_days(self) -> int:
-        return (self.exit_date - self.entry_date).days
+    def duration(self):
+        """
+        Time spent in the trade.
+        """
+        return self.exit_date - self.entry_date
