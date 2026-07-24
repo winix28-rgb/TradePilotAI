@@ -1,22 +1,43 @@
+# ---------------------------------------------------------
 # Python
+# ---------------------------------------------------------
+
 __pycache__/
 *.py[cod]
-*$py.class
+*.pyo
+*.pyd
 
 # Virtual Environment
+
 .venv/
 
 # macOS
+
 .DS_Store
 
 # VS Code
+
 .vscode/
 
+# Testing
+
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Ruff
+
+.ruff_cache/
+
+# MyPy
+
+.mypy_cache/
+
+# Build
+
+dist/
+build/
+
 # Logs
+
 *.log
-
-# Reports
-reports/output/
-
-# Jupyter
-.ipynb_checkpoints/
