@@ -16,10 +16,6 @@ from portfolio.portfolio_manager import PortfolioManager
 class TradeEngine:
     """
     Coordinates order execution.
-
-    The TradeEngine orchestrates interactions between
-    the broker and portfolio while delegating specialist
-    work to those components.
     """
 
     def __init__(
@@ -41,10 +37,6 @@ class TradeEngine:
     def execute(self, order: TradeOrder) -> Position:
         """
         Execute an approved BUY order.
-
-        The broker executes the order and returns the
-        resulting Position. The portfolio then stores
-        the new Position.
         """
 
         if not isinstance(order, TradeOrder):
