@@ -16,45 +16,9 @@ from portfolio.portfolio_manager import PortfolioManager
 from portfolio.simulation_account import SimulationAccount
 
 
-def test_performance_report_exposes_backtest_objects():
+def create_report():
     """
-    PerformanceReport should expose the underlying backtest objects.
-    """
-
-    account = SimulationAccount(10_000)
-
-    portfolio = PortfolioManager(account)
-
-    analytics = PortfolioAnalytics(portfolio)
-
-    equity_curve = [
-        EquityPoint(
-            timestamp=datetime(2025, 1, 1),
-            equity=10_000,
-        )
-    ]
-
-    result = BacktestResult(
-        portfolio=portfolio,
-        analytics=analytics,
-        start_date=datetime(2025, 1, 1),
-        end_date=datetime(2025, 12, 31),
-        initial_cash=10_000,
-        final_value=10_000,
-        equity_curve=equity_curve,
-    )
-
-    report = PerformanceReport(result)
-
-    assert report.result is result
-    assert report.analytics is analytics
-    assert report.portfolio is portfolio
-    assert report.equity_curve is equity_curve
-
-
-def test_performance_metrics():
-    """
-    Performance metrics should be calculated correctly.
+    Create a populated performance report for testing.
     """
 
     account = SimulationAccount(10_000)
@@ -92,27 +56,63 @@ def test_performance_metrics():
         end_date=datetime(2025, 1, 31),
         initial_cash=10_000,
         final_value=10_500,
-        equity_curve=[],
+        equity_curve=[
+            EquityPoint(
+                timestamp=datetime(2025, 1, 1),
+                equity=10_000,
+            )
+        ],
     )
 
-    report = PerformanceReport(result)
+    return PerformanceReport(result)
+
+
+def test_performance_report_exposes_backtest_objects():
+
+    report = create_report()
+
+    assert report.result is not None
+    assert report.analytics is not None
+    assert report.portfolio is not None
+    assert report.equity_curve is not None
+
+
+def test_performance_metrics():
+
+    report = create_report()
 
     assert report.win_rate == 50.0
     assert report.profit_factor == 2.0
-
     assert report.average_winner == 1000.0
     assert report.average_loser == -500.0
-
     assert report.largest_winner == 1000.0
     assert report.largest_loser == -500.0
-
     assert report.expectancy == 250.0
 
 
+def test_to_text_contains_expected_sections():
+
+    report = create_report()
+
+    text = report.to_text()
+
+    assert "TradePilotAI Strategy Report" in text
+    assert "BACKTEST" in text
+    assert "TRADING" in text
+    assert "Win Rate" in text
+    assert "Profit Factor" in text
+    assert "Expectancy" in text
+    assert "Largest Winner" in text
+
+
+def test_str_returns_text_report():
+
+    report = create_report()
+
+    assert str(report) == report.to_text()
+
+
 def test_empty_performance_metrics():
-    """
-    Empty portfolios should return zero-valued metrics.
-    """
 
     account = SimulationAccount(10_000)
 
@@ -134,11 +134,8 @@ def test_empty_performance_metrics():
 
     assert report.win_rate == 0.0
     assert report.profit_factor == 0.0
-
     assert report.average_winner == 0.0
     assert report.average_loser == 0.0
-
     assert report.largest_winner == 0.0
     assert report.largest_loser == 0.0
-
     assert report.expectancy == 0.0

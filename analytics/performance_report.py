@@ -113,9 +113,6 @@ class PerformanceReport:
 
     @property
     def expectancy(self) -> float:
-        """
-        Average profit (or loss) generated per completed trade.
-        """
 
         if self.analytics.total_trades == 0:
             return 0.0
@@ -126,3 +123,50 @@ class PerformanceReport:
         )
 
         return net_profit / self.analytics.total_trades
+
+    # --------------------------------------------------
+    # Report Output
+    # --------------------------------------------------
+
+    def to_text(self) -> str:
+        """
+        Return a formatted text report.
+        """
+
+        net_profit = (
+            self.analytics.realised_profit
+            + self.analytics.realised_loss
+        )
+
+        lines = [
+            "=" * 57,
+            "TradePilotAI Strategy Report",
+            "=" * 57,
+            "",
+            "BACKTEST",
+            "-" * 57,
+            f"Initial Capital     £{self.result.initial_cash:,.2f}",
+            f"Final Value         £{self.result.final_value:,.2f}",
+            f"Net Profit          £{net_profit:,.2f}",
+            "",
+            "TRADING",
+            "-" * 57,
+            f"Total Trades        {self.analytics.total_trades}",
+            f"Winning Trades      {self.analytics.winning_trades}",
+            f"Losing Trades       {self.analytics.losing_trades}",
+            "",
+            f"Win Rate            {self.win_rate:.2f}%",
+            f"Profit Factor       {self.profit_factor:.2f}",
+            f"Expectancy          £{self.expectancy:,.2f}",
+            "",
+            f"Average Winner      £{self.average_winner:,.2f}",
+            f"Average Loser       £{self.average_loser:,.2f}",
+            "",
+            f"Largest Winner      £{self.largest_winner:,.2f}",
+            f"Largest Loser       £{self.largest_loser:,.2f}",
+        ]
+
+        return "\n".join(lines)
+
+    def __str__(self) -> str:
+        return self.to_text()
