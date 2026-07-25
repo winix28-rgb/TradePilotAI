@@ -52,9 +52,9 @@ def test_performance_report_exposes_backtest_objects():
     assert report.equity_curve is equity_curve
 
 
-def test_win_rate_and_profit_factor():
+def test_performance_metrics():
     """
-    Win rate and profit factor should be calculated correctly.
+    Performance metrics should be calculated correctly.
     """
 
     account = SimulationAccount(10_000)
@@ -99,3 +99,42 @@ def test_win_rate_and_profit_factor():
 
     assert report.win_rate == 50.0
     assert report.profit_factor == 2.0
+
+    assert report.average_winner == 1000.0
+    assert report.average_loser == -500.0
+
+    assert report.largest_winner == 1000.0
+    assert report.largest_loser == -500.0
+
+
+def test_empty_performance_metrics():
+    """
+    Empty portfolios should return zero-valued metrics.
+    """
+
+    account = SimulationAccount(10_000)
+
+    portfolio = PortfolioManager(account)
+
+    analytics = PortfolioAnalytics(portfolio)
+
+    result = BacktestResult(
+        portfolio=portfolio,
+        analytics=analytics,
+        start_date=datetime(2025, 1, 1),
+        end_date=datetime(2025, 1, 31),
+        initial_cash=10_000,
+        final_value=10_000,
+        equity_curve=[],
+    )
+
+    report = PerformanceReport(result)
+
+    assert report.win_rate == 0.0
+    assert report.profit_factor == 0.0
+
+    assert report.average_winner == 0.0
+    assert report.average_loser == 0.0
+
+    assert report.largest_winner == 0.0
+    assert report.largest_loser == 0.0

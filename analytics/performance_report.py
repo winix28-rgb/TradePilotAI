@@ -47,6 +47,10 @@ class PerformanceReport:
         """
         return self.result.equity_curve
 
+    # --------------------------------------------------
+    # Performance Metrics
+    # --------------------------------------------------
+
     @property
     def win_rate(self) -> float:
         """
@@ -74,3 +78,65 @@ class PerformanceReport:
             return 0.0
 
         return gross_profit / gross_loss
+
+    @property
+    def average_winner(self) -> float:
+        """
+        Average profit of winning trades.
+        """
+
+        if self.analytics.winning_trades == 0:
+            return 0.0
+
+        return (
+            self.analytics.realised_profit
+            / self.analytics.winning_trades
+        )
+
+    @property
+    def average_loser(self) -> float:
+        """
+        Average loss of losing trades.
+        """
+
+        if self.analytics.losing_trades == 0:
+            return 0.0
+
+        return (
+            self.analytics.realised_loss
+            / self.analytics.losing_trades
+        )
+
+    @property
+    def largest_winner(self) -> float:
+        """
+        Largest winning trade.
+        """
+
+        winners = [
+            trade.profit
+            for trade in self.portfolio.trade_history
+            if trade.profit > 0
+        ]
+
+        if not winners:
+            return 0.0
+
+        return max(winners)
+
+    @property
+    def largest_loser(self) -> float:
+        """
+        Largest losing trade.
+        """
+
+        losers = [
+            trade.profit
+            for trade in self.portfolio.trade_history
+            if trade.profit < 0
+        ]
+
+        if not losers:
+            return 0.0
+
+        return min(losers)
