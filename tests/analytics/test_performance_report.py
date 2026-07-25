@@ -106,6 +106,8 @@ def test_performance_metrics():
     assert report.largest_winner == 1000.0
     assert report.largest_loser == -500.0
 
+    assert report.expectancy == 250.0
+
 
 def test_empty_performance_metrics():
     """
@@ -138,3 +140,5 @@ def test_empty_performance_metrics():
 
     assert report.largest_winner == 0.0
     assert report.largest_loser == 0.0
+
+    assert report.expectancy == 0.0
