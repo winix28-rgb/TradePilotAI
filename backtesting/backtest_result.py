@@ -7,10 +7,13 @@ Backtest Result
 Represents the outcome of a completed backtest.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 from datetime import datetime
 
 from analytics.portfolio_analytics import PortfolioAnalytics
+from backtesting.equity_point import EquityPoint
 from portfolio.portfolio_manager import PortfolioManager
 
 
@@ -28,6 +31,8 @@ class BacktestResult:
 
     initial_cash: float
     final_value: float
+
+    equity_curve: list[EquityPoint]
 
     @property
     def net_profit(self) -> float:

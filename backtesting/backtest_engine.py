@@ -11,6 +11,7 @@ from __future__ import annotations
 
 from analytics.portfolio_analytics import PortfolioAnalytics
 from backtesting.backtest_result import BacktestResult
+from backtesting.equity_point import EquityPoint
 from backtesting.historical_data import HistoricalData
 from core.trade_engine import TradeEngine
 from models.trade_order import TradeOrder
@@ -55,6 +56,12 @@ class BacktestEngine:
         Run a strategy across the supplied historical data.
         """
 
+        portfolio = self.trade_engine.portfolio
+
+        starting_cash = portfolio.account.cash
+
+        equity_curve: list[EquityPoint] = []
+
         for index in range(len(historical_data)):
 
             signal = strategy.generate_signal(
@@ -63,14 +70,20 @@ class BacktestEngine:
                 index=index,
             )
 
-            if signal is None:
-                continue
+            if signal is not None:
 
-            order = self._create_order(signal)
+                order = self._create_order(signal)
 
-            self.trade_engine.execute(order)
+                self.trade_engine.execute(order)
 
-        portfolio = self.trade_engine.portfolio
+            candle = historical_data[index]
+
+            equity_curve.append(
+                EquityPoint(
+                    timestamp=candle.timestamp,
+                    equity=portfolio.total_value,
+                )
+            )
 
         analytics = PortfolioAnalytics(portfolio)
 
@@ -79,8 +92,9 @@ class BacktestEngine:
             analytics=analytics,
             start_date=historical_data.first.timestamp,
             end_date=historical_data.last.timestamp,
-            initial_cash=portfolio.account.buying_power,
+            initial_cash=starting_cash,
             final_value=portfolio.total_value,
+            equity_curve=equity_curve,
         )
 
     def _create_order(
