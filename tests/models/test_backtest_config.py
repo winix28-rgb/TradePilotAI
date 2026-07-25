@@ -41,3 +41,35 @@ def test_config_is_immutable():
 
     with pytest.raises(Exception):
         config.starting_cash = 50_000.0
+
+
+# =========================================================
+# Validation Tests
+# =========================================================
+
+
+def test_starting_cash_cannot_be_zero():
+
+    with pytest.raises(ValueError):
+
+        BacktestConfig(
+            starting_cash=0
+        )
+
+
+def test_starting_cash_cannot_be_negative():
+
+    with pytest.raises(ValueError):
+
+        BacktestConfig(
+            starting_cash=-1000
+        )
+
+
+def test_benchmark_cannot_be_empty():
+
+    with pytest.raises(ValueError):
+
+        BacktestConfig(
+            benchmark=""
+        )

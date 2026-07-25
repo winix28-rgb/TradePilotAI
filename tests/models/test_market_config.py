@@ -44,3 +44,53 @@ def test_config_is_immutable():
 
     with pytest.raises(Exception):
         config.ticker = "TSCO.L"
+
+
+# =========================================================
+# Validation Tests
+# =========================================================
+
+
+def test_ticker_cannot_be_empty():
+
+    with pytest.raises(ValueError):
+
+        MarketConfig(
+            ticker=""
+        )
+
+
+def test_exchange_cannot_be_empty():
+
+    with pytest.raises(ValueError):
+
+        MarketConfig(
+            exchange=""
+        )
+
+
+def test_timeframe_cannot_be_empty():
+
+    with pytest.raises(ValueError):
+
+        MarketConfig(
+            timeframe=""
+        )
+
+
+def test_start_date_cannot_be_empty():
+
+    with pytest.raises(ValueError):
+
+        MarketConfig(
+            start_date=""
+        )
+
+
+def test_end_date_cannot_be_empty():
+
+    with pytest.raises(ValueError):
+
+        MarketConfig(
+            end_date=""
+        )

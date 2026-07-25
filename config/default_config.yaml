@@ -1,0 +1,25 @@
+strategy:
+  buy_rsi: 30
+  exit_rsi: 50
+  ema_fast: 12
+  ema_slow: 26
+
+risk:
+  risk_per_trade: 1.0
+  max_positions: 10
+  allow_short_positions: false
+  commission: 0.0
+  slippage: 0.0
+
+backtest:
+  starting_cash: 100000
+  benchmark: FTSE100
+  reinvest_profits: true
+  allow_fractional_shares: false
+
+market:
+  ticker: RR.L
+  exchange: LSE
+  timeframe: 1d
+  start_date: 2015-01-01
+  end_date: 2025-12-31

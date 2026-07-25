@@ -1,7 +1,7 @@
 """
 ===========================================================
 TradePilotAI
-Strategy Config Tests
+Strategy Configuration Tests
 ===========================================================
 """
 
@@ -53,3 +53,64 @@ def test_config_is_immutable():
 
     with pytest.raises(Exception):
         config.buy_rsi = 20
+
+
+# =========================================================
+# Validation Tests
+# =========================================================
+
+
+def test_invalid_buy_rsi():
+
+    with pytest.raises(ValueError):
+
+        StrategyConfig(
+            buy_rsi=120
+        )
+
+
+def test_invalid_exit_rsi():
+
+    with pytest.raises(ValueError):
+
+        StrategyConfig(
+            exit_rsi=-5
+        )
+
+
+def test_invalid_fast_ema():
+
+    with pytest.raises(ValueError):
+
+        StrategyConfig(
+            ema_fast=0
+        )
+
+
+def test_invalid_slow_ema():
+
+    with pytest.raises(ValueError):
+
+        StrategyConfig(
+            ema_slow=0
+        )
+
+
+def test_fast_ema_cannot_equal_slow_ema():
+
+    with pytest.raises(ValueError):
+
+        StrategyConfig(
+            ema_fast=26,
+            ema_slow=26
+        )
+
+
+def test_fast_ema_cannot_exceed_slow_ema():
+
+    with pytest.raises(ValueError):
+
+        StrategyConfig(
+            ema_fast=30,
+            ema_slow=10
+        )

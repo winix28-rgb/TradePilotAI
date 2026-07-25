@@ -25,3 +25,15 @@ class BacktestConfig:
     reinvest_profits: bool = True
 
     allow_fractional_shares: bool = False
+
+    def __post_init__(self):
+
+        if self.starting_cash <= 0:
+            raise ValueError(
+                "starting_cash must be greater than zero"
+            )
+
+        if not self.benchmark:
+            raise ValueError(
+                "benchmark cannot be empty"
+            )

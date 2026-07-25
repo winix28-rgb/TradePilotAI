@@ -44,3 +44,62 @@ def test_config_is_immutable():
 
     with pytest.raises(Exception):
         config.max_positions = 20
+
+
+# =========================================================
+# Validation Tests
+# =========================================================
+
+
+def test_risk_per_trade_cannot_be_zero():
+
+    with pytest.raises(ValueError):
+
+        RiskConfig(
+            risk_per_trade=0
+        )
+
+
+def test_risk_per_trade_cannot_be_negative():
+
+    with pytest.raises(ValueError):
+
+        RiskConfig(
+            risk_per_trade=-1
+        )
+
+
+def test_risk_per_trade_cannot_exceed_100():
+
+    with pytest.raises(ValueError):
+
+        RiskConfig(
+            risk_per_trade=101
+        )
+
+
+def test_max_positions_must_be_positive():
+
+    with pytest.raises(ValueError):
+
+        RiskConfig(
+            max_positions=0
+        )
+
+
+def test_commission_cannot_be_negative():
+
+    with pytest.raises(ValueError):
+
+        RiskConfig(
+            commission=-1
+        )
+
+
+def test_slippage_cannot_be_negative():
+
+    with pytest.raises(ValueError):
+
+        RiskConfig(
+            slippage=-0.5
+        )
