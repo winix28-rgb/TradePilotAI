@@ -38,36 +38,65 @@ class BacktestRunner:
     ):
         self.config = config
 
+
     def run(
         self,
         symbol: str,
         historical_data: HistoricalData,
     ):
+        """
+        Run a backtest using the configured strategy.
+        """
+
+        strategy = RSIMeanReversionStrategy(
+            self.config.strategy
+        )
+
+        return self.run_with_strategy(
+            symbol=symbol,
+            strategy=strategy,
+            historical_data=historical_data,
+        )
+
+
+    def run_with_strategy(
+        self,
+        symbol: str,
+        strategy,
+        historical_data: HistoricalData,
+    ):
+        """
+        Run a backtest using a supplied strategy.
+
+        Used by the optimisation engine where different
+        StrategyConfig values create different strategies.
+        """
 
         account = SimulationAccount(
             self.config.backtest.starting_cash
         )
 
+
         portfolio = PortfolioManager(
             account
         )
 
+
         broker = PaperBroker(
             account
         )
+
 
         trade_engine = TradeEngine(
             broker,
             portfolio
         )
 
+
         engine = BacktestEngine(
             trade_engine
         )
 
-        strategy = RSIMeanReversionStrategy(
-            self.config.strategy
-        )
 
         return engine.run(
             symbol=symbol,

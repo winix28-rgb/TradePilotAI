@@ -22,9 +22,12 @@ class StrategyConfig:
 
     exit_rsi: int = 50
 
+    rsi_period: int = 14
+
     ema_fast: int = 12
 
     ema_slow: int = 26
+
 
     def __post_init__(self):
 
@@ -33,20 +36,30 @@ class StrategyConfig:
                 "buy_rsi must be between 0 and 100"
             )
 
+
         if not 0 <= self.exit_rsi <= 100:
             raise ValueError(
                 "exit_rsi must be between 0 and 100"
             )
+
+
+        if self.rsi_period <= 0:
+            raise ValueError(
+                "rsi_period must be greater than zero"
+            )
+
 
         if self.ema_fast <= 0:
             raise ValueError(
                 "ema_fast must be greater than zero"
             )
 
+
         if self.ema_slow <= 0:
             raise ValueError(
                 "ema_slow must be greater than zero"
             )
+
 
         if self.ema_fast >= self.ema_slow:
             raise ValueError(

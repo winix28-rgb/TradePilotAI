@@ -3,43 +3,94 @@
 TradePilotAI
 Indicator Engine
 ===========================================================
+
+Combines price data with calculated indicators.
 """
 
-import pandas as pd
+from __future__ import annotations
+
+from backtesting.candle import Candle
+
+from indicators.ema import calculate_ema
+from indicators.rsi import calculate_rsi
 
 
 class IndicatorEngine:
+    """
+    Calculates indicators and creates strategy-ready bars.
+    """
 
-    @staticmethod
-    def ema(series: pd.Series, period: int) -> pd.Series:
-        return series.ewm(span=period, adjust=False).mean()
+    def __init__(
+        self,
+        ema_fast: int = 12,
+        ema_slow: int = 26,
+        rsi_period: int = 14,
+    ):
 
-    @staticmethod
-    def rsi(series: pd.Series, period: int = 14) -> pd.Series:
+        self.ema_fast = ema_fast
+        self.ema_slow = ema_slow
+        self.rsi_period = rsi_period
 
-        delta = series.diff()
 
-        gain = delta.clip(lower=0)
-        loss = -delta.clip(upper=0)
+    def calculate(
+        self,
+        candles: list[Candle],
+    ) -> list[dict]:
+        """
+        Convert candles into indicator enriched bars.
+        """
 
-        avg_gain = gain.ewm(alpha=1 / period, adjust=False).mean()
-        avg_loss = loss.ewm(alpha=1 / period, adjust=False).mean()
+        if not candles:
+            return []
 
-        rs = avg_gain / avg_loss
 
-        rsi = 100 - (100 / (1 + rs))
+        closes = [
+            candle.close
+            for candle in candles
+        ]
 
-        return rsi
 
-    @classmethod
-    def add_indicators(cls, data: pd.DataFrame) -> pd.DataFrame:
+        ema_fast_values = calculate_ema(
+            closes,
+            self.ema_fast,
+        )
 
-        data = data.copy()
 
-        data["EMA12"] = cls.ema(data["Close"], 12)
+        ema_slow_values = calculate_ema(
+            closes,
+            self.ema_slow,
+        )
 
-        data["EMA26"] = cls.ema(data["Close"], 26)
 
-        data["RSI"] = cls.rsi(data["Close"])
+        rsi_values = calculate_rsi(
+            closes,
+            self.rsi_period,
+        )
 
-        return data
+
+        bars = []
+
+
+        for index, candle in enumerate(candles):
+
+            bars.append(
+                {
+                    "Open": candle.open,
+                    "High": candle.high,
+                    "Low": candle.low,
+                    "Close": candle.close,
+                    "Volume": candle.volume,
+
+                    f"EMA{self.ema_fast}":
+                        ema_fast_values[index],
+
+                    f"EMA{self.ema_slow}":
+                        ema_slow_values[index],
+
+                    "RSI":
+                        rsi_values[index],
+                }
+            )
+
+
+        return bars

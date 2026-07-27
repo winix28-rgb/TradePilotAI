@@ -33,6 +33,7 @@ class OptimisationResult:
 
     total_trades: int
 
+
     @property
     def score(self) -> float:
         """
@@ -49,5 +50,10 @@ class OptimisationResult:
 
         return (
             self.profit_factor
-            * (100 - self.max_drawdown)
+            *
+            (
+                100
+                -
+                self.max_drawdown
+            )
         )

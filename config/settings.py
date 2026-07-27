@@ -2,14 +2,29 @@
 ===========================================================
 TradePilotAI
 Configuration Settings
-Version 3.0
+Version 4.0
 ===========================================================
 
-All application settings are stored here.
+Central application configuration.
 
-Changing a value here automatically changes the behaviour
-of the trading system.
+Contains:
+- Strategy settings
+- Risk settings
+- Backtest settings
+- Runtime environment settings
 """
+
+from __future__ import annotations
+
+import os
+
+from dataclasses import dataclass
+
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 
 # ==========================================================
 # ACCOUNT SETTINGS
@@ -17,7 +32,7 @@ of the trading system.
 
 ACCOUNT_SIZE = 100000
 
-RISK_PER_TRADE = 0.01          # 1%
+RISK_PER_TRADE = 0.01
 
 MAX_OPEN_POSITIONS = 10
 
@@ -70,3 +85,60 @@ SHOW_DEBUG = True
 SAVE_TRADE_LOG = True
 
 SAVE_REPORT = True
+
+
+
+# ==========================================================
+# RUNTIME SETTINGS
+# ==========================================================
+
+@dataclass(
+    frozen=True,
+    slots=True,
+)
+class Settings:
+    """
+    Runtime application settings.
+    """
+
+    mode: str
+
+    ig_username: str | None
+
+    ig_password: str | None
+
+    ig_api_key: str | None
+
+    ig_account_type: str
+
+
+    @classmethod
+    def load(cls):
+        """
+        Load settings from environment.
+        """
+
+        return cls(
+
+            mode=os.getenv(
+                "TRADEPILOT_MODE",
+                "BACKTEST",
+            ),
+
+            ig_username=os.getenv(
+                "IG_USERNAME"
+            ),
+
+            ig_password=os.getenv(
+                "IG_PASSWORD"
+            ),
+
+            ig_api_key=os.getenv(
+                "IG_API_KEY"
+            ),
+
+            ig_account_type=os.getenv(
+                "IG_ACCOUNT_TYPE",
+                "DEMO",
+            ),
+        )
