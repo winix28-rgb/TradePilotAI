@@ -2,19 +2,13 @@
 ===========================================================
 TradePilotAI Dashboard
 ===========================================================
-
-Operator interface.
-
-Version 1:
-- System status
-- Trading mode
-- Account display
-- Signal monitoring
-
-No execution controls yet.
 """
 
 import streamlit as st
+
+from dashboard.state import state
+from dashboard.components.trade_card import show_trade_card
+
 
 
 st.set_page_config(
@@ -33,112 +27,55 @@ st.title("🚀 TradePilotAI Dashboard")
 st.header("System Status")
 
 
-col1, col2, col3 = st.columns(3)
+c1, c2, c3 = st.columns(3)
 
 
-with col1:
-
+with c1:
     st.metric(
-        "Engine Status",
-        "RUNNING",
+        "Engine",
+        state.engine_status,
     )
 
 
-with col2:
-
+with c2:
     st.metric(
-        "Trading Mode",
-        "DEMO",
+        "Mode",
+        state.mode,
     )
 
 
-with col3:
-
+with c3:
     st.metric(
-        "Risk Status",
-        "NORMAL",
+        "IG Connection",
+        state.connection_status,
     )
+
 
 
 # =========================================================
-# ACCOUNT
+# APPROVAL QUEUE
 # =========================================================
 
-st.header("Account")
-
-
-account_col1, account_col2, account_col3 = st.columns(3)
-
-
-with account_col1:
-
-    st.metric(
-        "Balance",
-        "£10,000",
-    )
-
-
-with account_col2:
-
-    st.metric(
-        "Equity",
-        "£10,000",
-    )
-
-
-with account_col3:
-
-    st.metric(
-        "Open Positions",
-        "0",
-    )
-
-
-# =========================================================
-# SIGNALS
-# =========================================================
-
-st.header("Latest Signals")
-
-
-signals = [
-
-    {
-        "Symbol": "RR.L",
-        "Signal": "BUY",
-        "Reason": "RSI Oversold + EMA Cross",
-    },
-
-    {
-        "Symbol": "TSCO.L",
-        "Signal": "WAIT",
-        "Reason": "No setup",
-    },
-
-]
-
-
-st.table(
-    signals
+st.header(
+    "Trade Approval Queue"
 )
 
 
-# =========================================================
-# CONTROLS
-# =========================================================
-
-st.header("Trading Controls")
+pending = state.pending_trades()
 
 
-if st.button("Pause Trading"):
+if not pending:
 
-    st.warning(
-        "Trading paused"
+    st.info(
+        "No pending trade approvals."
     )
 
 
-if st.button("Emergency Stop"):
+else:
 
-    st.error(
-        "Emergency stop activated"
-    )
+    for trade in pending:
+
+        show_trade_card(
+            trade,
+            state.approval_manager,
+        )
