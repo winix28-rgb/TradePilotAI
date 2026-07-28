@@ -10,9 +10,15 @@ Flow:
 
 Signal
   |
-Approval
+Approval Queue
+  |
+User Decision
+  |
+Order Creation
   |
 Execution
+  |
+Trade Journal
 """
 
 from __future__ import annotations
@@ -22,7 +28,15 @@ from __future__ import annotations
 class TradingApplication:
     """
     Main application coordinator.
+
+    Handles:
+    - Receiving signals
+    - Approval workflow
+    - Order creation
+    - Execution
+    - Journal logging
     """
+
 
 
     def __init__(
@@ -31,6 +45,7 @@ class TradingApplication:
         approval_manager,
         order_factory,
         execution_router,
+        journal=None,
     ) -> None:
 
         self.signal_bridge = signal_bridge
@@ -41,6 +56,8 @@ class TradingApplication:
 
         self.execution_router = execution_router
 
+        self.journal = journal
+
 
 
     def receive_signal(
@@ -49,16 +66,36 @@ class TradingApplication:
         quantity: int = 1,
     ):
         """
-        Receive strategy signal.
-
-        Sends it to approval queue.
+        Receive strategy signal
+        and create approval request.
         """
 
-
-        return self.signal_bridge.submit(
-            signal,
-            quantity,
+        approval = (
+            self.signal_bridge.submit(
+                signal,
+                quantity,
+            )
         )
+
+
+        if self.journal and approval:
+
+            self.journal.record(
+
+                "SIGNAL",
+
+                signal.symbol,
+
+                {
+                    "action": signal.action,
+                    "strategy": signal.strategy,
+                    "entry_price": signal.entry_price,
+                }
+
+            )
+
+
+        return approval
 
 
 
@@ -66,6 +103,9 @@ class TradingApplication:
         self,
         symbol: str,
     ):
+        """
+        Approve trade and execute.
+        """
 
         approval = (
             self.approval_manager.approve(
@@ -79,6 +119,24 @@ class TradingApplication:
             return None
 
 
+
+        if self.journal:
+
+            self.journal.record(
+
+                "APPROVED",
+
+                symbol,
+
+                {
+                    "quantity": approval.quantity,
+                    "entry_price": approval.entry_price,
+                }
+
+            )
+
+
+
         order = (
             self.order_factory.create_order(
                 approval,
@@ -87,7 +145,24 @@ class TradingApplication:
         )
 
 
-        return (
+
+        if self.journal:
+
+            self.journal.record(
+
+                "ORDER_CREATED",
+
+                symbol,
+
+                {
+                    "order": str(order)
+                }
+
+            )
+
+
+
+        result = (
             self.execution_router.execute(
                 order
             )
@@ -95,13 +170,49 @@ class TradingApplication:
 
 
 
+        if self.journal:
+
+            self.journal.record(
+
+                "EXECUTED",
+
+                symbol,
+
+                {
+                    "result": str(result)
+                }
+
+            )
+
+
+        return result
+
+
+
     def reject_trade(
         self,
         symbol: str,
     ):
+        """
+        Reject trade.
+        """
 
-        return (
+        result = (
             self.approval_manager.reject(
                 symbol
             )
         )
+
+
+        if self.journal:
+
+            self.journal.record(
+
+                "REJECTED",
+
+                symbol
+
+            )
+
+
+        return result
