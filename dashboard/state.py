@@ -11,7 +11,13 @@ from __future__ import annotations
 
 
 from core.application_factory import ApplicationFactory
+from core.signal_bridge import SignalBridge
+
 from dashboard.controller import DashboardController
+
+from services.demo_signal_service import (
+    DemoSignalService,
+)
 
 
 
@@ -41,8 +47,12 @@ class DashboardState:
         Create application services.
         """
 
-        class SignalBridge:
-            pass
+
+        # Real SignalBridge
+
+        signal_bridge = SignalBridge(
+            None
+        )
 
 
         class OrderFactory:
@@ -56,13 +66,21 @@ class DashboardState:
 
         services = ApplicationFactory.create(
 
-            SignalBridge(),
+            signal_bridge,
 
             OrderFactory(),
 
             ExecutionRouter(),
 
         )
+
+
+        # Connect bridge to approval manager
+
+        signal_bridge.approval_manager = (
+            services["approval_manager"]
+        )
+
 
 
         self.application = (
@@ -85,10 +103,15 @@ class DashboardState:
         )
 
 
-        # Dashboard control layer
-
         self.controller = DashboardController(
             self.application
+        )
+
+
+        self.demo_signal_service = DemoSignalService(
+
+            signal_bridge
+
         )
 
 

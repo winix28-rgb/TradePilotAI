@@ -19,6 +19,13 @@ def show_trade_card(
     Display a trade approval card.
     """
 
+
+    trade_key = (
+        f"{trade.symbol}_{id(trade)}"
+    )
+
+
+
     st.subheader(
         f"{trade.action} {trade.symbol}"
     )
@@ -49,15 +56,21 @@ def show_trade_card(
     col1, col2 = st.columns(2)
 
 
+
     with col1:
 
         if st.button(
+
             "✅ Approve",
-            key=f"approve_{trade.symbol}",
+
+            key=f"approve_{trade_key}",
+
         ):
 
             controller.approve_trade(
+
                 trade.symbol
+
             )
 
             st.success(
@@ -69,12 +82,17 @@ def show_trade_card(
     with col2:
 
         if st.button(
+
             "❌ Reject",
-            key=f"reject_{trade.symbol}",
+
+            key=f"reject_{trade_key}",
+
         ):
 
             controller.reject_trade(
+
                 trade.symbol
+
             )
 
             st.error(

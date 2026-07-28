@@ -68,6 +68,47 @@ with col3:
 
 
 # =========================================================
+# DEMO SIGNAL GENERATOR
+# =========================================================
+
+st.divider()
+
+
+st.header(
+    "Demo Trading"
+)
+
+
+
+if st.button(
+    "🚀 Generate Demo Trade"
+):
+
+    trade = (
+        state.demo_signal_service
+        .create_demo_trade()
+    )
+
+
+    if trade:
+
+        st.success(
+
+            f"Created {trade.action} "
+            f"{trade.symbol} approval"
+
+        )
+
+
+    else:
+
+        st.warning(
+            "No trade created."
+        )
+
+
+
+# =========================================================
 # APPROVAL QUEUE
 # =========================================================
 
