@@ -2,40 +2,109 @@
 ===========================================================
 TradePilotAI
 Dashboard State
-===========================================================
 
-Shared dashboard application state.
+Central state container for the Streamlit application.
+===========================================================
 """
 
 from __future__ import annotations
 
-from core.approval_manager import ApprovalManager
+
+from core.application_factory import ApplicationFactory
+
 
 
 class DashboardState:
     """
-    Stores dashboard runtime state.
+    Holds the running TradePilotAI application state.
     """
+
 
 
     def __init__(self):
 
-        self.approval_manager = ApprovalManager()
+        self.engine_status = "RUNNING"
 
         self.mode = "DEMO"
 
-        self.engine_status = "RUNNING"
-
         self.connection_status = "CONNECTED"
+
+
+        self._build_application()
+
+
+
+    def _build_application(self):
+
+        """
+        Create application services.
+        """
+
+        class SignalBridge:
+            pass
+
+
+        class OrderFactory:
+            pass
+
+
+        class ExecutionRouter:
+            pass
+
+
+
+        services = ApplicationFactory.create(
+
+            SignalBridge(),
+
+            OrderFactory(),
+
+            ExecutionRouter(),
+
+        )
+
+
+        self.application = (
+            services["application"]
+        )
+
+
+        self.approval_manager = (
+            services["approval_manager"]
+        )
+
+
+        self.journal = (
+            services["journal"]
+        )
+
+
+        self.performance = (
+            services["performance"]
+        )
 
 
 
     def pending_trades(self):
 
-        return self.approval_manager.pending()
+        """
+        Return pending approval items.
+        """
+
+        if hasattr(
+            self.approval_manager,
+            "pending"
+        ):
+
+            return (
+                self.approval_manager.pending()
+            )
+
+
+        return []
 
 
 
-# Global dashboard state
+# Global dashboard state instance
 
 state = DashboardState()
