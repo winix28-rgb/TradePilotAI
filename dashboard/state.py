@@ -11,6 +11,7 @@ from __future__ import annotations
 
 
 from core.application_factory import ApplicationFactory
+from dashboard.controller import DashboardController
 
 
 
@@ -84,6 +85,13 @@ class DashboardState:
         )
 
 
+        # Dashboard control layer
+
+        self.controller = DashboardController(
+            self.application
+        )
+
+
 
     def pending_trades(self):
 
@@ -91,17 +99,9 @@ class DashboardState:
         Return pending approval items.
         """
 
-        if hasattr(
-            self.approval_manager,
-            "pending"
-        ):
-
-            return (
-                self.approval_manager.pending()
-            )
-
-
-        return []
+        return (
+            self.controller.get_pending_trades()
+        )
 
 
 

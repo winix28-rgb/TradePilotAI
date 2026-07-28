@@ -13,7 +13,7 @@ import streamlit as st
 
 def show_trade_card(
     trade,
-    approval_manager,
+    controller,
 ):
     """
     Display a trade approval card.
@@ -27,6 +27,7 @@ def show_trade_card(
     st.write(
         f"Quantity: {trade.quantity}"
     )
+
 
     st.write(
         f"Entry Price: £{trade.entry_price:.2f}"
@@ -55,7 +56,7 @@ def show_trade_card(
             key=f"approve_{trade.symbol}",
         ):
 
-            approval_manager.approve(
+            controller.approve_trade(
                 trade.symbol
             )
 
@@ -72,7 +73,7 @@ def show_trade_card(
             key=f"reject_{trade.symbol}",
         ):
 
-            approval_manager.reject(
+            controller.reject_trade(
                 trade.symbol
             )
 
