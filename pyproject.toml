@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = []
 
 [project.scripts]
-tradepilotai-os = "tradepilotai_os:main"
+tradepilotai-os = "tradepilotai_os.__main__:main"
 
 [build-system]
 requires = ["uv_build>=0.12.0,<0.13.0"]

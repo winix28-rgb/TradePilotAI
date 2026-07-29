@@ -1,2 +1,7 @@
-def main() -> None:
-    print("Hello from tradepilotai-os!")
+"""
+TradePilotAI Operating System
+"""
+
+from .version import __version__
+
+__all__ = ["__version__"]
