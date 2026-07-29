@@ -1,6 +1,8 @@
 """Application lifecycle."""
 
-from .banner import print_banner
+from tradepilotai_os.banner import print_banner
+from tradepilotai_os.core.service_manager import ServiceManager
+from tradepilotai_os.infrastructure.logging.logging_service import LoggingService
 
 
 class Application:
@@ -9,11 +11,11 @@ class Application:
     def run(self) -> None:
         print_banner()
 
-        print("Initialising...")
-        print()
+        manager = ServiceManager()
 
-        print("✓ Configuration")
-        print("✓ Logging")
-        print("✓ Application")
+        manager.register(LoggingService())
+
+        manager.start_all()
+
         print()
-        print("System Ready")
+        print("Application Ready")
