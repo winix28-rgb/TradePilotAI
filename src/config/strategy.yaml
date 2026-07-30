@@ -1,0 +1,32 @@
+# ==========================================================
+# FTSE Quant Trader V2
+# Strategy Configuration
+# ==========================================================
+
+strategy:
+
+  timeframe: "1h"
+
+  ema_fast: 12
+  ema_slow: 26
+
+  rsi_period: 14
+
+  oversold: 30
+  overbought: 70
+
+  exit_rsi: 50
+
+risk:
+
+  account_size: 100000
+
+  risk_per_trade: 1.0
+
+  max_positions: 10
+
+scanner:
+
+  market: "FTSE100"
+
+  refresh_minutes: 60

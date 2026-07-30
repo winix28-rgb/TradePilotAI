@@ -6,6 +6,8 @@ Application
 """
 
 from .banner import print_banner
+from .dashboard import DashboardPage
+from .dashboard.data_provider import DashboardDataProvider
 
 from .core.container import Container
 from .core.registry import ServiceRegistry
@@ -52,6 +54,10 @@ class Application:
         self.service_manager.start_all()
 
         print("\nApplication Ready\n")
+
+        dashboard_provider = DashboardDataProvider(container=self.container, app=self)
+        dashboard = DashboardPage(data_provider=dashboard_provider)
+        dashboard.show()
 
     def shutdown(self) -> None:
 
