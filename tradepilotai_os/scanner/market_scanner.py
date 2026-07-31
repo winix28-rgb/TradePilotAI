@@ -1,38 +1,65 @@
-"""Market scanner for the TradePilotAI OS."""
+"""
+===========================================================
+TradePilotAI OS
+Market Scanner
+===========================================================
+"""
 
 from __future__ import annotations
 
 from typing import Sequence
 
+from tradepilotai_os.market_data import YahooMarketDataProvider
+
 
 class MarketScanner:
-    """Identify instruments that should be analyzed.
-
-    This component is responsible only for producing a list of
-    symbols for downstream data collection. It does not calculate
-    indicators, generate signals, or make trading decisions.
+    """
+    Produces a live watchlist with current market data.
     """
 
-    def __init__(self, symbols: Sequence[str] | None = None) -> None:
-        self._symbols = list(symbols or [
-            "RR.L",
-            "LLOY.L",
-            "TSCO.L",
-            "MKS.L",
-            "BARC.L",
-            "BP.L",
-            "SHEL.L",
-            "VOD.L",
-            "AZN.L",
-            "NG.L",
-        ])
+    def __init__(
+        self,
+        symbols: Sequence[str] | None = None,
+    ):
+
+        self.provider = YahooMarketDataProvider()
+
+        self._symbols = list(
+            symbols or
+            [
+                "RR",
+                "LLOY",
+                "TSCO",
+                "MKS",
+                "BARC",
+                "BP",
+                "SHEL",
+                "VOD",
+                "AZN",
+                "NG",
+                "AAPL",
+                "TSLA",
+            ]
+        )
 
     def get_watchlist(self) -> list[str]:
-        """Return the list of symbols that require analysis."""
 
         return list(self._symbols)
 
-    def set_symbols(self, symbols: Sequence[str]) -> None:
-        """Replace the active watchlist with a new symbol sequence."""
+    def scan(self) -> list[dict]:
 
-        self._symbols = list(symbols)
+        opportunities = []
+
+        for symbol in self._symbols:
+
+            try:
+
+                quote = self.provider.quote(symbol)
+
+                opportunities.append(quote)
+
+            except Exception:
+
+                continue
+
+        return opportunities
