@@ -5,6 +5,11 @@ from __future__ import annotations
 from typing import Any
 
 from tradepilotai_os.navigation import NavigationService
+from tradepilotai_os.ui_library import StatusBar
+from tradepilotai_os.live_trading import LiveTradingPage
+from tradepilotai_os.risk import RiskDashboardPage
+from tradepilotai_os.strategy import StrategyPage
+from tradepilotai_os.trade_history import TradeHistoryPage
 
 
 class ApplicationShell:
@@ -18,6 +23,14 @@ class ApplicationShell:
         """Select the current page for the shell to render."""
 
         self._current_page = self.navigation_service.navigate(route)
+        if self._current_page is None and route == "trade_history":
+            self._current_page = TradeHistoryPage()
+        if self._current_page is None and route == "risk":
+            self._current_page = RiskDashboardPage()
+        if self._current_page is None and route == "live_trading":
+            self._current_page = LiveTradingPage()
+        if self._current_page is None and route == "strategy":
+            self._current_page = StrategyPage()
 
     def render(self) -> str:
         """Render the shell layout including the active page content."""

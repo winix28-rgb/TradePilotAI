@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any
 
 from tradepilotai_os.ui_library import (
-    Breadcrumb,
     Card,
     ChartCard,
     DataTable,
@@ -16,18 +15,22 @@ from tradepilotai_os.ui_library import (
     StatusBar,
     Toolbar,
 )
+from tradepilotai_os.navigation import NavigationService
+from tradepilotai_os.workspace import WorkspacePage
 
 from .data_provider import DashboardDataProvider
 
 
-class DashboardPage:
+class DashboardPage(WorkspacePage):
     """Render the main dashboard home screen with reusable panels."""
 
     def __init__(
         self,
         data: dict[str, Any] | None = None,
         data_provider: DashboardDataProvider | None = None,
+        navigation_service: NavigationService | None = None,
     ) -> None:
+        super().__init__(page_title="Dashboard", navigation_service=navigation_service)
         self.data = data or {}
         self.data_provider = data_provider
 
@@ -49,17 +52,20 @@ class DashboardPage:
                 "system_messages": [],
             }
 
+        for route in ["portfolio", "scanner", "backtesting", "trade_history", "risk", "live_trading", "strategy"]:
+            self.navigation_service.register(route, route)
+
         lines = [
             "",
             "=" * 80,
             "TRADEPILOTAI OS DASHBOARD",
             "=" * 80,
             "",
-            SectionHeader(title="Overview", subtitle="Shared component layout").render(),
+            self.build_title("Overview", "Shared component layout"),
             "",
-            Toolbar(title="Dashboard Actions", actions=["Refresh", "Export"]).render(),
+            self.build_toolbar("Dashboard Actions", ["Refresh", "Export"]),
             "",
-            Breadcrumb(items=["Home", "Dashboard"]).render(),
+            self.build_breadcrumbs("dashboard", "Dashboard"),
             "",
             StatusBadge(label="System", status="online").render(),
             "",
@@ -81,13 +87,19 @@ class DashboardPage:
             "",
             Card(title="Strategy Performance", body=self._strategy_rows(self.data.get("strategy_performance"))).render(),
             "",
-            Card(title="Recent Trades", body=["AAPL BUY @ 100.00"] if self.data.get("recent_trades") else ["No recent trades"]).render(),
+            Card(title="Recent Trades", body=self._recent_trade_rows()).render(),
+            "",
+            Card(title="Risk Summary", body=["Portfolio risk view available", "Open the risk workspace"]).render(),
+            "",
+            Card(title="Trading", body=["Broker-backed order management available", "Open the live trading workspace"]).render(),
+            "",
+            Card(title="Strategy Centre", body=["Create, configure, and deploy strategies", "Open the Strategy Centre"]).render(),
             "",
             Card(title="System Messages", body=self.data.get("system_messages", ["No service data available"])).render(),
             "",
             NotificationPanel(items=self.data.get("system_messages", [])).render(),
             "",
-            StatusBar(container=self._resolve_container(), version="1.0.0").render(),
+            self.build_status_bar(container=self._resolve_container()),
             "",
         ]
 
@@ -148,6 +160,12 @@ class DashboardPage:
         if not trades:
             return []
         return [[trade.get("symbol", "-"), trade.get("side", "-"), trade.get("price", 0.0)] for trade in trades]
+
+    def _recent_trade_rows(self) -> list[str]:
+        if self.data.get("recent_trades"):
+            self.navigation_service.register("trade_history", "trade_history")
+            return [f"AAPL BUY @ 100.00 -> Open Trade History", "MSFT SELL @ 200.00 -> Open Trade History"]
+        return ["No recent trades"]
 
     def show(self) -> None:
         """Print the rendered dashboard to stdout."""

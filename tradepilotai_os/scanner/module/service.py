@@ -6,6 +6,8 @@ from datetime import datetime, timezone
 import time
 from typing import Any
 
+import pandas as pd
+
 from tradepilotai_os.indicators.indicator_engine import IndicatorEngine
 from tradepilotai_os.market_data.yahoo_provider import YahooMarketDataProvider
 from tradepilotai_os.models.trade_signal import TradeSignal
@@ -56,6 +58,7 @@ class ScannerService:
                     raise ValueError("Not enough market data")
 
                 enriched = self.indicator_engine.add_indicators(history)
+                volatility = self._volatility(enriched)
                 signal = self.strategy_engine.evaluate(symbol, enriched)
             except Exception as exc:  # pragma: no cover - defensive guard
                 events.append({"name": f"{symbol} Scan", "status": "Failed", "message": str(exc)})
@@ -76,7 +79,7 @@ class ScannerService:
                 })
                 continue
 
-            row = self._to_result_row(symbol=symbol, signal=signal)
+            row = self._to_result_row(symbol=symbol, signal=signal, volatility=volatility)
             results.append(row)
             watch_list_rows.append({
                 "symbol": symbol,
@@ -94,7 +97,7 @@ class ScannerService:
                     "ema_trend": "Bullish" if signal.ema12 >= signal.ema26 else "Bearish",
                     "signal": signal.signal,
                     "confidence": signal.confidence,
-                    "risk_rating": self._risk_rating(signal.confidence),
+                    "risk_rating": self._risk_rating(signal.confidence, volatility),
                 })
             elif signal.signal == "SELL":
                 sell_candidates.append({
@@ -105,7 +108,7 @@ class ScannerService:
                     "ema_trend": "Bullish" if signal.ema12 >= signal.ema26 else "Bearish",
                     "signal": signal.signal,
                     "confidence": signal.confidence,
-                    "risk_rating": self._risk_rating(signal.confidence),
+                    "risk_rating": self._risk_rating(signal.confidence, volatility),
                 })
 
             events.append({"name": f"{symbol} Scan", "status": "Complete", "message": signal.signal})
@@ -152,11 +155,9 @@ class ScannerService:
         self._last_scan_result = payload
         return payload
 
-    def _to_result_row(self, *, symbol: str, signal: TradeSignal) -> dict[str, Any]:
-        signal_label = str(signal.signal or "WATCH").upper()
-        trend = "Bullish" if signal.ema12 >= signal.ema26 else "Bearish"
-        if signal_label == "WATCH":
-            trend = "Neutral"
+    def _to_result_row(self, *, symbol: str, signal: TradeSignal, volatility: float | None = None) -> dict[str, Any]:
+        signal_label = str(signal.signal or "HOLD").upper()
+        trend = self._trend(signal)
         reason = " | ".join(signal.reasons) if signal.reasons else "Strategy signal generated"
 
         return {
@@ -167,7 +168,7 @@ class ScannerService:
             "score": int(signal.confidence),
             "rsi": round(signal.rsi, 1),
             "trend": trend,
-            "risk": self._risk_rating(signal.confidence),
+            "risk": self._risk_rating(signal.confidence, volatility),
             "reason": reason,
             "opportunity": reason,
             "price": round(signal.price, 2),
@@ -194,9 +195,49 @@ class ScannerService:
             "suggested_take_profit": f"{raw_signal.target:.2f}",
         }
 
-    def _risk_rating(self, confidence: int) -> str:
+    def _risk_rating(self, confidence: int, volatility: float | None = None) -> str:
+        if volatility is None:
+            volatility = 0.0
+
+        if volatility >= 0.04:
+            return "High"
+        if volatility >= 0.02:
+            return "Medium"
         if confidence >= 80:
             return "Low"
         if confidence >= 60:
             return "Medium"
         return "High"
+
+    def _volatility(self, data: pd.DataFrame | None) -> float:
+        if data is None or data.empty:
+            return 0.0
+
+        close = data.get("Close") if "Close" in data.columns else None
+        if close is None:
+            return 0.0
+
+        if isinstance(close, pd.DataFrame):
+            if close.shape[1] == 0:
+                return 0.0
+            close = close.iloc[:, 0]
+
+        close = pd.Series(close).dropna()
+        if len(close) < 2:
+            return 0.0
+
+        returns = close.pct_change().dropna()
+        if returns.empty:
+            return 0.0
+
+        volatility = returns.rolling(20).std().iloc[-1]
+        if pd.isna(volatility):
+            return 0.0
+        return float(volatility)
+
+    def _trend(self, signal: TradeSignal) -> str:
+        if signal.ema12 > signal.ema26:
+            return "Bullish"
+        if signal.ema12 < signal.ema26:
+            return "Bearish"
+        return "Neutral"

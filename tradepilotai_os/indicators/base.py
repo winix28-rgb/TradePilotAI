@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:  # pragma: no cover - exercised when pandas is unavailable
+    pd = None
 
 
 class Indicator(ABC):

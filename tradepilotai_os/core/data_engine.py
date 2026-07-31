@@ -14,7 +14,10 @@ from __future__ import annotations
 
 from typing import Any
 
-import yfinance as yf
+try:
+    import yfinance as yf
+except ImportError:  # pragma: no cover - exercised when yfinance is unavailable
+    yf = None
 
 from .service import Service
 
@@ -56,6 +59,9 @@ class DataEngine(Service):
         """
 
         try:
+            if yf is None:
+                return None
+
             data = yf.download(
                 ticker,
                 interval=interval,

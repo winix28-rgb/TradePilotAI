@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from tradepilotai_os.models.trade import Trade
+from tradepilotai_os.operations.logging_service import create_logger
 
 
 @dataclass(slots=True)
@@ -19,9 +20,18 @@ class ExecutionResult:
     metadata: dict[str, Any] | None = None
 
 
-class Broker(ABC):
+class BrokerInterface(ABC):
     """Abstract interface for exchanging trade execution logic."""
+
+    def __init__(self) -> None:
+        self.logger = create_logger("TradePilotAI")
 
     @abstractmethod
     def execute(self, trade: Trade) -> ExecutionResult:
         """Execute a trade proposal through the broker implementation."""
+
+
+class Broker(BrokerInterface):
+    """Backward-compatible broker abstraction alias."""
+
+    pass

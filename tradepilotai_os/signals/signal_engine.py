@@ -1,112 +1,118 @@
-"""Signal generation components for the TradePilotAI OS."""
+"""
+===========================================================
+TradePilotAI OS
+Signal Engine
+===========================================================
+
+Implements the TradePilotAI trading rules.
+
+LONG
+-----
+RSI < 30
+EMA12 crosses ABOVE EMA26
+
+SHORT
+------
+RSI > 70
+EMA12 crosses BELOW EMA26
+
+EXIT
+-----
+RSI returns to 50
+"""
 
 from __future__ import annotations
 
-from typing import Any
-
-import pandas as pd
-
-from tradepilotai_os.models.market_status import MarketStatus
-from tradepilotai_os.models.signal import Signal
+from tradepilotai_os.models.trade_signal import TradeSignal
 
 
 class SignalEngine:
-    """Generate standardized signal objects from indicator outputs.
-
-    This engine focuses on signal detection only. It does not apply
-    strategy, risk, or execution rules.
-    """
 
     @staticmethod
-    def is_bullish_crossover(previous: pd.Series, current: pd.Series) -> bool:
-        """Return True when EMA12 crosses above EMA26."""
+    def evaluate(symbol: str, data) -> TradeSignal:
 
-        return (
-            float(previous["EMA12"]) <= float(previous["EMA26"])
-            and float(current["EMA12"]) > float(current["EMA26"])
-        )
+        # -------------------------------------------------
+        # Flatten Yahoo Finance MultiIndex columns
+        # -------------------------------------------------
 
-    @staticmethod
-    def is_bearish_crossover(previous: pd.Series, current: pd.Series) -> bool:
-        """Return True when EMA12 crosses below EMA26."""
+        if hasattr(data.columns, "nlevels") and data.columns.nlevels > 1:
+            data = data.copy()
+            data.columns = data.columns.get_level_values(0)
 
-        return (
-            float(previous["EMA12"]) >= float(previous["EMA26"])
-            and float(current["EMA12"]) < float(current["EMA26"])
-        )
-
-    def find_signals(self, data: pd.DataFrame, ticker: str) -> list[Signal]:
-        """Return historical crossover signals for the supplied dataframe."""
-
-        signals: list[Signal] = []
-
-        for index in range(1, len(data)):
-            previous = data.iloc[index - 1]
-            current = data.iloc[index]
-
-            if self.is_bullish_crossover(previous, current):
-                signals.append(
-                    Signal(
-                        ticker=ticker,
-                        signal_type="BUY",
-                        entry_price=float(current["Close"]),
-                        stop_loss=float(current["Low"]),
-                        rsi=float(current["RSI"]),
-                        ema12=float(current["EMA12"]),
-                        ema26=float(current["EMA26"]),
-                    )
-                )
-            elif self.is_bearish_crossover(previous, current):
-                signals.append(
-                    Signal(
-                        ticker=ticker,
-                        signal_type="SELL",
-                        entry_price=float(current["Close"]),
-                        stop_loss=float(current["High"]),
-                        rsi=float(current["RSI"]),
-                        ema12=float(current["EMA12"]),
-                        ema26=float(current["EMA26"]),
-                    )
-                )
-
-        return signals
-
-    def get_market_status(self, data: pd.DataFrame, ticker: str) -> MarketStatus:
-        """Return the current market status based on the latest data."""
+        if len(data) < 30:
+            raise ValueError(
+                "Not enough market data to evaluate signal."
+            )
 
         latest = data.iloc[-1]
 
-        if float(latest["EMA12"]) > float(latest["EMA26"]):
-            trend = "Bullish"
-        elif float(latest["EMA12"]) < float(latest["EMA26"]):
-            trend = "Bearish"
+        price = float(latest["Close"])
+
+        rsi = float(latest["RSI"])
+
+        ema12 = float(latest["EMA12"])
+        ema26 = float(latest["EMA26"])
+
+        bullish_alignment = ema12 > ema26
+        bearish_alignment = ema12 < ema26
+
+        oversold = rsi < 30
+        overbought = rsi > 70
+
+        signal = "HOLD"
+        confidence = 0
+        reasons: list[str] = []
+
+        if bullish_alignment:
+            reasons.append("Bullish EMA alignment")
+        elif bearish_alignment:
+            reasons.append("Bearish EMA alignment")
         else:
-            trend = "Neutral"
+            reasons.append("Neutral EMA alignment")
 
-        signal_type = "NONE"
-        signal_age = -1
+        if oversold:
+            reasons.append("RSI Oversold")
+        elif overbought:
+            reasons.append("RSI Overbought")
 
-        for index in range(len(data) - 1, 0, -1):
-            previous = data.iloc[index - 1]
-            current = data.iloc[index]
+        if oversold and bullish_alignment:
+            signal = "BUY"
+            confidence = 70
+            if rsi < 20:
+                confidence += 10
+            if abs(rsi - 15) < 15:
+                confidence += 10
+        elif overbought and bearish_alignment:
+            signal = "SELL"
+            confidence = 70
+            if rsi > 80:
+                confidence += 10
+            if abs(rsi - 85) < 15:
+                confidence += 10
+        else:
+            confidence = 40
+            if bullish_alignment:
+                confidence += 10
+            elif bearish_alignment:
+                confidence += 10
+            if oversold or overbought:
+                confidence += 10
+            reasons.append("No qualifying setup")
 
-            if self.is_bullish_crossover(previous, current):
-                signal_type = "BUY"
-                signal_age = len(data) - 1 - index
-                break
+        confidence = min(100, max(0, confidence))
 
-            if self.is_bearish_crossover(previous, current):
-                signal_type = "SELL"
-                signal_age = len(data) - 1 - index
-                break
+        stop_loss = round(price * 0.98, 2)
+        target = round(price * 1.06, 2)
 
-        return MarketStatus(
-            ticker=ticker,
-            trend=trend,
-            current_signal=signal_type,
-            signal_age=signal_age,
-            close=float(latest["Close"]),
-            ema12=float(latest["EMA12"]),
-            ema26=float(latest["EMA26"]),
-            rsi=float(latest["RSI"]),
+        return TradeSignal(
+            symbol=symbol,
+            signal=signal,
+            confidence=confidence,
+            price=price,
+            rsi=rsi,
+            ema12=ema12,
+            ema26=ema26,
+            stop_loss=stop_loss,
+            target=target,
+            reasons=reasons,
         )

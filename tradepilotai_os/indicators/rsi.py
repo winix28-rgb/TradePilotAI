@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:  # pragma: no cover - exercised when pandas is unavailable
+    pd = None
 
 from .base import Indicator
 

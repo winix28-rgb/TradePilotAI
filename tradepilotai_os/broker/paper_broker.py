@@ -10,10 +10,10 @@ from tradepilotai_os.models.order import Order
 from tradepilotai_os.models.portfolio import Portfolio
 from tradepilotai_os.models.position import Position
 from tradepilotai_os.models.trade import Trade
-from .base import Broker, ExecutionResult
+from .base import BrokerInterface, ExecutionResult
 
 
-class PaperBroker(Broker):
+class PaperBroker(BrokerInterface):
     """A realistic paper-trading broker simulation.
 
     The broker owns all execution rules such as validation,
@@ -27,6 +27,7 @@ class PaperBroker(Broker):
         commission: float = 0.0,
         slippage: float = 0.0,
     ) -> None:
+        super().__init__()
         self.portfolio = Portfolio(cash=initial_cash)
         self.executed_trades: list[Trade] = []
         self.execution_reports: list[ExecutionReport] = []
@@ -36,7 +37,10 @@ class PaperBroker(Broker):
     def execute(self, trade: Trade) -> ExecutionResult:
         """Execute a trade proposal as a paper order."""
 
+        self.logger.info("paper broker execute requested", module="broker", ticker=getattr(trade, "ticker", None))
+
         if trade.entry_price is None:
+            self.logger.warning("paper broker rejected trade without entry price", module="broker", ticker=getattr(trade, "ticker", None))
             return ExecutionResult(
                 success=False,
                 message="Trade entry price is required.",
@@ -99,6 +103,7 @@ class PaperBroker(Broker):
         )
         self.execution_reports.append(report)
         self.executed_trades.append(trade)
+        self.logger.info("paper broker executed trade", module="broker", ticker=getattr(trade, "ticker", None), order_id=order.order_id)
 
         return ExecutionResult(
             success=True,

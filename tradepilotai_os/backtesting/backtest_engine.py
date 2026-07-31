@@ -4,7 +4,10 @@ from __future__ import annotations
 
 from typing import Any
 
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:  # pragma: no cover - exercised when pandas is unavailable
+    pd = None
 
 from tradepilotai_os.broker.paper_broker import PaperBroker
 from tradepilotai_os.core.data_engine import DataEngine

@@ -6,7 +6,6 @@ from typing import Any
 
 from tradepilotai_os.navigation import NavigationService
 from tradepilotai_os.ui_library import (
-    Breadcrumb,
     Card,
     DataTable,
     KPIChartCard,
@@ -15,14 +14,15 @@ from tradepilotai_os.ui_library import (
     StatusBar,
     Toolbar,
 )
+from tradepilotai_os.workspace import WorkspacePage
 
 
-class PortfolioPage:
+class PortfolioPage(WorkspacePage):
     """Render the portfolio dashboard with reusable panels and tables."""
 
     def __init__(self, portfolio_service: Any | None = None, navigation_service: NavigationService | None = None) -> None:
+        super().__init__(page_title="Portfolio", navigation_service=navigation_service)
         self.portfolio_service = portfolio_service
-        self.navigation_service = navigation_service or NavigationService()
 
     def render(self) -> str:
         """Render the portfolio dashboard to a string."""
@@ -36,11 +36,11 @@ class PortfolioPage:
             "PORTFOLIO DASHBOARD",
             "=" * 80,
             "",
-            SectionHeader(title="Portfolio Overview", subtitle="Shared component layout").render(),
+            self.build_title("Portfolio Overview", "Shared component layout"),
             "",
-            Toolbar(title="Portfolio Controls", actions=["Rebalance", "Export"]).render(),
+            self.build_toolbar("Portfolio Controls", ["Rebalance", "Export"]),
             "",
-            self._build_breadcrumbs(),
+            self.build_breadcrumbs("portfolio", "Portfolio"),
             "",
             StatusBadge(label="Allocation", status="balanced").render(),
             "",
@@ -76,7 +76,7 @@ class PortfolioPage:
 
         lines.extend([
             "",
-            StatusBar(container=self._resolve_container(), version="1.0.0").render(),
+            self.build_status_bar(container=self._resolve_container()),
         ])
 
         return "\n".join(lines)
