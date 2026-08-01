@@ -1,6 +1,10 @@
 from tradepilotai_os.application_shell import ApplicationShell
+from tradepilotai_os.broker.paper_broker import PaperBroker
+from tradepilotai_os.models.position import Position as PortfolioPosition
 from tradepilotai_os.navigation import NavigationService
+from tradepilotai_os.portfolio.portfolio_manager import PortfolioManager
 from tradepilotai_os.risk import RiskDashboardPage, RiskDataProvider, RiskDashboardService
+from tradepilotai_os.risk.risk_engine import RiskEngine
 
 
 class StubContainer:
@@ -68,3 +72,30 @@ def test_risk_dashboard_service_refreshes_and_subscribes():
     service = RiskDashboardService()
     service.refresh()
     assert service.refresh_count() == 1
+
+
+def test_risk_dashboard_service_uses_live_portfolio_and_risk_engine():
+    portfolio_manager = PortfolioManager(initial_cash=100000.0)
+    portfolio_manager.state.cash = 50000.0
+    portfolio_manager.state.exposure = 10000.0
+    portfolio_manager.state.unrealised_pnl = 500.0
+    portfolio_manager.state.realised_pnl = 250.0
+    portfolio_manager.state.positions["AAPL"] = PortfolioPosition(
+        symbol="AAPL",
+        quantity=10,
+        average_price=100.0,
+        market_price=105.0,
+        exposure=1050.0,
+    )
+
+    broker = PaperBroker(initial_cash=100000.0)
+    risk_engine = RiskEngine(account_balance=100000.0, risk_per_trade=0.01, max_position_size=1000.0)
+
+    service = RiskDashboardService(portfolio_manager=portfolio_manager, broker=broker, risk_engine=risk_engine)
+    snapshot = service.get_snapshot()
+
+    assert snapshot.assessment.open_positions == 1
+    assert snapshot.assessment.total_exposure == 10000.0
+    assert snapshot.assessment.available_cash == 50000.0
+    assert snapshot.positions[0].symbol == "AAPL"
+    assert snapshot.positions[0].risk_percent > 0

@@ -16,7 +16,7 @@ import streamlit as st
 def spacer(lines: int = 1) -> None:
     """Insert vertical spacing."""
     for _ in range(lines):
-        st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
+        st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
 
 # ----------------------------------------------------------
@@ -133,5 +133,14 @@ def kpi(
 # Empty State
 # ----------------------------------------------------------
 
+def empty_state(message: str = "No data available") -> None:
+    st.markdown(
+        f"""
+        <div class="tp-empty-state">{message}</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+
 def empty_panel(message: str = "No data available") -> None:
-    st.info(message)
+    empty_state(message)

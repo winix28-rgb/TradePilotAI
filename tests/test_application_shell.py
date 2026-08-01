@@ -29,3 +29,12 @@ def test_application_shell_renders_current_page_content():
     rendered = shell.render()
 
     assert "Dashboard Content" in rendered
+
+
+def test_application_shell_resolves_known_workspace_routes():
+    shell = ApplicationShell(navigation_service=NavigationService())
+
+    shell.show("scanner")
+    rendered = shell.render()
+
+    assert "SCANNER WORKSPACE" in rendered

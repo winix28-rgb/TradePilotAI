@@ -47,11 +47,11 @@ class Theme:
     # Card Settings
     # --------------------------------------------------
 
-    CARD_RADIUS = "12px"
+    CARD_RADIUS = "14px"
 
-    CARD_PADDING = "18px"
+    CARD_PADDING = "14px 16px"
 
-    CARD_SHADOW = "0 2px 8px rgba(0,0,0,.05)"
+    CARD_SHADOW = "0 2px 10px rgba(15,23,42,.04)"
 
     # --------------------------------------------------
     # Layout
@@ -59,25 +59,25 @@ class Theme:
 
     PAGE_WIDTH = "96%"
 
-    KPI_HEIGHT = "90px"
+    KPI_HEIGHT = "112px"
 
-    PANEL_PADDING = "18px"
+    PANEL_PADDING = "14px 16px"
 
-    GAP = "20px"
+    GAP = "16px"
 
     # --------------------------------------------------
     # Fonts
     # --------------------------------------------------
 
-    TITLE_SIZE = "32px"
+    TITLE_SIZE = "28px"
 
-    PANEL_TITLE = "20px"
+    PANEL_TITLE = "16px"
 
-    KPI_TITLE = "13px"
+    KPI_TITLE = "12px"
 
-    KPI_VALUE = "28px"
+    KPI_VALUE = "24px"
 
-    BODY = "14px"
+    BODY = "13px"
 
     FONT = (
         "-apple-system,"

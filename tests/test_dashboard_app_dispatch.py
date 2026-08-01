@@ -1,0 +1,44 @@
+from dashboard import app as dashboard_app
+
+
+def test_dispatcher_maps_sidebar_routes_to_existing_renderers():
+    assert dashboard_app._resolve_renderer_key("dashboard") == "dashboard"
+    assert dashboard_app._resolve_renderer_key("scanner") == "scanner"
+    assert dashboard_app._resolve_renderer_key("portfolio") == "portfolio"
+    assert dashboard_app._resolve_renderer_key("trades") == "trade_history"
+    assert dashboard_app._resolve_renderer_key("strategies") == "strategy"
+    assert dashboard_app._resolve_renderer_key("risk") == "risk"
+
+
+def test_workspace_navigation_chrome_is_removed_before_rendering():
+    sample = "\n".join(
+        [
+            "",
+            "====================",
+            "SCANNER WORKSPACE",
+            "====================",
+            "",
+            "Scanner Overview - Trading opportunity workspace",
+            "",
+            "Scanner Controls: Scan | Refresh",
+            "",
+            "Dashboard / Scanner",
+            "",
+            "Scanner[live]",
+            "",
+            "Scanner Summary",
+            "",
+        ]
+    )
+
+    cleaned = dashboard_app._strip_workspace_navigation_markup(sample)
+
+    assert "SCANNER WORKSPACE" in cleaned
+    assert "Scanner Overview" in cleaned
+    assert "Scanner Controls" not in cleaned
+    assert "Dashboard / Scanner" not in cleaned
+    assert "Scanner Summary" in cleaned
+
+
+def test_streamlit_runtime_disables_builtin_sidebar_navigation():
+    assert hasattr(dashboard_app, "st")
