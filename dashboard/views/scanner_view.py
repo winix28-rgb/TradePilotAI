@@ -4,10 +4,22 @@ from __future__ import annotations
 
 from typing import Any
 
-import pandas as pd
 import streamlit as st
 
-from dashboard.layout import card, empty_state, section, spacer
+from dashboard.layout import (
+    apply_desktop_layout,
+    card,
+    empty_state,
+    render_information_banner,
+    render_kpi_card,
+    render_section,
+    render_table,
+    section,
+    spacer,
+)
+
+
+_REVIEW_DATA_UNAVAILABLE = "Not available from current scanner data."
 
 
 def _coerce_value(value: Any, default: Any = None) -> Any:
@@ -156,9 +168,13 @@ def _render_summary(results: list[dict[str, Any]]) -> None:
     ]
     for col, (label, value) in zip(cols, summary_items):
         with col:
-            with card():
-                st.markdown(f"<div class='tp-kpi-title'>{label}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='tp-kpi-value'>{value}</div>", unsafe_allow_html=True)
+            render_kpi_card(
+                title=str(label),
+                value=str(value),
+                footer_label="",
+                footer_value="",
+                show_footer=False,
+            )
 
 
 def _render_filters(results: list[dict[str, Any]]) -> tuple[dict[str, Any], list[dict[str, Any]]]:
@@ -274,9 +290,13 @@ def _render_market_summary(results: list[dict[str, Any]]) -> None:
     cols = st.columns(5, gap="small")
     for col, (label, value) in zip(cols, summary_items):
         with col:
-            with card():
-                st.markdown(f"<div class='tp-kpi-title'>{label}</div>", unsafe_allow_html=True)
-                st.markdown(f"<div class='tp-kpi-value'>{value}</div>", unsafe_allow_html=True)
+            render_kpi_card(
+                title=str(label),
+                value=str(value),
+                footer_label="",
+                footer_value="",
+                show_footer=False,
+            )
 
 
 def _signal_badge(signal: str) -> str:
@@ -286,41 +306,447 @@ def _signal_badge(signal: str) -> str:
     return f"<span style='color:{color};font-weight:700'>{signal_text}</span>"
 
 
+def _review_options(results: list[dict[str, Any]]) -> list[str]:
+    return [str(row.get("ticker", "")).upper() for row in results if str(row.get("ticker", "")).strip()]
+
+
+def _ensure_review_selection(results: list[dict[str, Any]]) -> str:
+    options = _review_options(results)
+    current = str(st.session_state.get("scanner_review_key", "") or "").upper()
+    if not options:
+        st.session_state.pop("scanner_review_key", None)
+        return ""
+    if current not in options:
+        current = options[0]
+        st.session_state["scanner_review_key"] = current
+    return current
+
+
+def _set_review_selection(ticker: str) -> None:
+    st.session_state["scanner_review_key"] = str(ticker or "").upper()
+
+
 def _render_results_table(results: list[dict[str, Any]]) -> None:
     if not results:
         empty_state("No opportunities match the applied filters")
         return
 
-    rows = []
-    for index, row in enumerate(results, start=1):
-        signal = str(row.get("signal", "HOLD") or "HOLD").upper()
-        rows.append(
-            {
-                "Rank": index,
-                "Ticker": row.get("ticker", "-"),
-                "Signal": signal,
-                "Strategy": row.get("strategy", "RSI Mean Reversion"),
-                "Confidence": f"{int(row.get('confidence', 0) or 0)}%",
-                "Score": f"{float(row.get('score', 0) or 0):.1f}",
-                "Trend": row.get("trend", "Unknown"),
-                "RSI": f"{float(row.get('rsi', 0) or 0):.1f}",
-                "Risk": row.get("risk", "Medium"),
-                "Current Price": f"{float(row.get('price', 0) or 0):,.2f}",
-                "Review": "Open",
-            }
-        )
+    active_review = _ensure_review_selection(results)
 
-    df = pd.DataFrame(rows)
-    st.dataframe(
-        df,
-        hide_index=True,
-        use_container_width=True,
-        height=320,
-        column_config={
-            "Signal": st.column_config.TextColumn(width="small"),
-            "Review": st.column_config.TextColumn(width="small"),
-            "Rank": st.column_config.NumberColumn(width="small"),
-        },
+    header_cols = st.columns([0.5, 1.1, 0.8, 1.4, 0.9, 0.8, 0.9, 0.7, 0.8, 1.0, 0.9], gap="small")
+    header_labels = ["Rank", "Ticker", "Signal", "Strategy", "Confidence", "Score", "Trend", "RSI", "Risk", "Current Price", "Review"]
+    for col, label in zip(header_cols, header_labels):
+        with col:
+            st.caption(label)
+
+    st.divider()
+
+    for index, row in enumerate(results, start=1):
+        ticker = str(row.get("ticker", "-") or "-")
+        signal = str(row.get("signal", "HOLD") or "HOLD").upper()
+        is_selected = ticker.upper() == active_review
+
+        with st.container(border=True):
+            if is_selected:
+                st.markdown(
+                    "<div style='background:#EFF6FF;border:1px solid #BFDBFE;border-radius:8px;padding:6px 10px;margin-bottom:8px;font-weight:600;color:#1D4ED8;'>Selected for review</div>",
+                    unsafe_allow_html=True,
+                )
+
+            row_cols = st.columns([0.5, 1.1, 0.8, 1.4, 0.9, 0.8, 0.9, 0.7, 0.8, 1.0, 0.9], gap="small")
+            with row_cols[0]:
+                st.write(index)
+            with row_cols[1]:
+                ticker_label = f"**{ticker}**" if is_selected else ticker
+                if st.button(ticker_label, key=f"scanner_ticker_{ticker}", use_container_width=True):
+                    _set_review_selection(ticker)
+                    st.rerun()
+            with row_cols[2]:
+                st.markdown(_signal_badge(signal), unsafe_allow_html=True)
+            with row_cols[3]:
+                st.write(str(row.get("strategy", "RSI Mean Reversion")))
+            with row_cols[4]:
+                st.write(f"{int(row.get('confidence', 0) or 0)}%")
+            with row_cols[5]:
+                st.write(f"{float(row.get('score', 0) or 0):.1f}")
+            with row_cols[6]:
+                st.write(str(row.get("trend", "Unknown")))
+            with row_cols[7]:
+                st.write(f"{float(row.get('rsi', 0) or 0):.1f}")
+            with row_cols[8]:
+                st.write(str(row.get("risk", "Medium")))
+            with row_cols[9]:
+                st.write(f"{float(row.get('price', 0) or 0):,.2f}")
+            with row_cols[10]:
+                review_label = "Selected" if is_selected else "Open"
+                if st.button(review_label, key=f"scanner_review_{ticker}", use_container_width=True, type="primary" if is_selected else "secondary"):
+                    _set_review_selection(ticker)
+                    st.rerun()
+
+
+def _raw_value(selected: dict[str, Any], attribute: str) -> Any:
+    raw = selected.get("raw")
+    if raw is None:
+        return None
+    if isinstance(raw, dict):
+        return raw.get(attribute)
+    return getattr(raw, attribute, None)
+
+
+def _display_value(value: Any, default: str = _REVIEW_DATA_UNAVAILABLE) -> str:
+    if value is None:
+        return default
+    if isinstance(value, str):
+        stripped = value.strip()
+        return stripped or default
+    if isinstance(value, list):
+        if not value:
+            return default
+        return ", ".join(str(item) for item in value if str(item).strip()) or default
+    return str(value)
+
+
+def _display_price(value: Any) -> str:
+    if value is None:
+        return _REVIEW_DATA_UNAVAILABLE
+    try:
+        return f"${float(value):,.2f}"
+    except (TypeError, ValueError):
+        return _display_value(value)
+
+
+def _display_confidence(value: Any) -> str:
+    if value is None:
+        return _REVIEW_DATA_UNAVAILABLE
+    try:
+        return f"{int(value)}%"
+    except (TypeError, ValueError):
+        return _display_value(value)
+
+
+def _display_numeric(value: Any, suffix: str = "") -> str:
+    if value is None:
+        return _REVIEW_DATA_UNAVAILABLE
+    try:
+        return f"{float(value):.2f}{suffix}"
+    except (TypeError, ValueError):
+        return _display_value(value)
+
+
+def _portfolio_snapshot(state: Any, ticker: str) -> dict[str, Any]:
+    portfolio_source = getattr(state, "portfolio_service", None) or getattr(state, "portfolio_manager", None)
+    portfolio_state = getattr(portfolio_source, "state", None)
+    if portfolio_state is None:
+        broker = getattr(state, "broker", None)
+        portfolio_state = getattr(broker, "portfolio", None)
+
+    positions = getattr(portfolio_state, "positions", {}) or {}
+    selected_position = positions.get(ticker) if isinstance(positions, dict) else None
+
+    return {
+        "cash": getattr(portfolio_state, "cash", None),
+        "exposure": getattr(portfolio_state, "exposure", None),
+        "positions": positions,
+        "selected_position": selected_position,
+    }
+
+
+def _rsi_interpretation(rsi: Any) -> str:
+    try:
+        rsi_value = float(rsi)
+    except (TypeError, ValueError):
+        return _REVIEW_DATA_UNAVAILABLE
+
+    if rsi_value >= 70:
+        return f"Overbought at {rsi_value:.1f}."
+    if rsi_value <= 30:
+        return f"Oversold at {rsi_value:.1f}."
+    return f"Neutral-to-balanced at {rsi_value:.1f}."
+
+
+def _ma_alignment(selected: dict[str, Any]) -> str:
+    ema12 = _raw_value(selected, "ema12")
+    ema26 = _raw_value(selected, "ema26")
+    try:
+        fast = float(ema12)
+        slow = float(ema26)
+    except (TypeError, ValueError):
+        return _REVIEW_DATA_UNAVAILABLE
+
+    if fast > slow:
+        return f"EMA12 above EMA26 ({fast:.2f} vs {slow:.2f})."
+    if fast < slow:
+        return f"EMA12 below EMA26 ({fast:.2f} vs {slow:.2f})."
+    return f"EMA12 is aligned with EMA26 at {fast:.2f}."
+
+
+def _momentum_view(selected: dict[str, Any]) -> str:
+    signal = _display_value(selected.get("signal"))
+    trend = _display_value(selected.get("trend"))
+    confidence = _display_confidence(selected.get("confidence"))
+    return f"{signal} setup with {trend.lower()} trend and {confidence} confidence."
+
+
+def _strategy_validation(selected: dict[str, Any]) -> tuple[str, str, str]:
+    reasons = _raw_value(selected, "reasons") or []
+    rationale = _display_value(reasons, default=_display_value(selected.get("reason")))
+
+    passed_rules: list[str] = []
+    failed_rules: list[str] = []
+
+    ema12 = _raw_value(selected, "ema12")
+    ema26 = _raw_value(selected, "ema26")
+    try:
+        if float(ema12) > float(ema26):
+            passed_rules.append("Fast moving average is above the slow moving average.")
+        elif float(ema12) < float(ema26):
+            failed_rules.append("Fast moving average is below the slow moving average.")
+    except (TypeError, ValueError):
+        failed_rules.append(_REVIEW_DATA_UNAVAILABLE)
+
+    rsi = selected.get("rsi")
+    try:
+        rsi_value = float(rsi)
+        if 30 <= rsi_value <= 70:
+            passed_rules.append(f"RSI is inside the balanced range at {rsi_value:.1f}.")
+        else:
+            failed_rules.append(f"RSI is outside the balanced range at {rsi_value:.1f}.")
+    except (TypeError, ValueError):
+        failed_rules.append(_REVIEW_DATA_UNAVAILABLE)
+
+    confidence = selected.get("confidence")
+    try:
+        confidence_value = int(confidence)
+        if confidence_value >= 60:
+            passed_rules.append(f"Confidence threshold met at {confidence_value}%.")
+        else:
+            failed_rules.append(f"Confidence remains below the preferred threshold at {confidence_value}%.")
+    except (TypeError, ValueError):
+        failed_rules.append(_REVIEW_DATA_UNAVAILABLE)
+
+    signal = str(selected.get("signal", "HOLD") or "HOLD").upper()
+    if signal in {"BUY", "SELL"}:
+        passed_rules.append(f"Strategy produced an actionable {signal} signal.")
+    else:
+        failed_rules.append("Strategy did not produce an actionable signal.")
+
+    return (
+        rationale,
+        "; ".join(passed_rules) if passed_rules else _REVIEW_DATA_UNAVAILABLE,
+        "; ".join(failed_rules) if failed_rules else _REVIEW_DATA_UNAVAILABLE,
+    )
+
+
+def _reasons_for_trade(selected: dict[str, Any]) -> list[str]:
+    reasons = _raw_value(selected, "reasons") or []
+    items = [str(reason).strip() for reason in reasons if str(reason).strip()]
+    if selected.get("trend"):
+        items.append(f"Trend context: {_display_value(selected.get('trend'))}.")
+    if selected.get("confidence") is not None:
+        items.append(f"Confidence: {_display_confidence(selected.get('confidence'))}.")
+    deduped: list[str] = []
+    for item in items:
+        if item not in deduped:
+            deduped.append(item)
+    return deduped or [_REVIEW_DATA_UNAVAILABLE]
+
+
+def _reasons_against_trade(selected: dict[str, Any], portfolio: dict[str, Any]) -> list[str]:
+    items: list[str] = []
+    signal = str(selected.get("signal", "HOLD") or "HOLD").upper()
+    if signal == "HOLD":
+        items.append("Strategy remains on HOLD rather than issuing an executable signal.")
+
+    rsi = selected.get("rsi")
+    try:
+        rsi_value = float(rsi)
+        if rsi_value >= 70:
+            items.append(f"RSI is overbought at {rsi_value:.1f}.")
+        elif rsi_value <= 30:
+            items.append(f"RSI is oversold at {rsi_value:.1f}.")
+    except (TypeError, ValueError):
+        items.append(_REVIEW_DATA_UNAVAILABLE)
+
+    if str(selected.get("risk", "")).lower() == "high":
+        items.append("Scanner risk rating is High.")
+
+    if portfolio.get("selected_position") is not None:
+        items.append("Portfolio already holds this symbol.")
+
+    return items or [_REVIEW_DATA_UNAVAILABLE]
+
+
+def _recommendation(selected: dict[str, Any]) -> tuple[str, str]:
+    signal = str(selected.get("signal", "HOLD") or "HOLD").upper()
+    risk = str(selected.get("risk", "") or "")
+    try:
+        confidence = int(selected.get("confidence", 0) or 0)
+    except (TypeError, ValueError):
+        confidence = 0
+
+    try:
+        rsi = float(selected.get("rsi", 0) or 0)
+    except (TypeError, ValueError):
+        rsi = 0.0
+
+    confidence_label = "HIGH" if confidence >= 80 else "MEDIUM" if confidence >= 60 else "LOW"
+
+    if signal == "BUY" and confidence >= 70 and risk.lower() != "high":
+        return "EXECUTE", confidence_label
+    if signal == "SELL" and confidence >= 70:
+        return "REJECT", confidence_label
+    if risk.lower() == "high" or rsi >= 70 or (0 < rsi <= 30) or confidence < 55:
+        return "REJECT", "LOW"
+    return "WATCH", confidence_label
+
+
+def _render_reason_list(items: list[str], column_name: str) -> None:
+    render_table(rows=[{column_name: item} for item in items], columns=[column_name])
+
+
+def _render_ai_review_tab(selected: dict[str, Any], state: Any) -> None:
+    ticker = _display_value(selected.get("ticker"))
+    signal = _display_value(selected.get("signal"))
+    strategy = _display_value(selected.get("strategy"))
+    confidence = _display_confidence(selected.get("confidence"))
+    current_price = _display_price(selected.get("price"))
+    portfolio = _portfolio_snapshot(state, ticker)
+
+    rationale, passed_rules, failed_rules = _strategy_validation(selected)
+    reasons_for = _reasons_for_trade(selected)
+    reasons_against = _reasons_against_trade(selected, portfolio)
+    recommendation, recommendation_confidence = _recommendation(selected)
+
+    render_section("Trade Summary", lambda: _render_ai_trade_summary(ticker, signal, strategy, confidence, current_price))
+
+    analysis_left, analysis_right = st.columns([0.5, 0.5], gap="small")
+    with analysis_left:
+        render_section("Technical Analysis", lambda: render_table(
+            rows=[
+                {"Metric": "Trend", "Value": _display_value(selected.get("trend"))},
+                {"Metric": "RSI interpretation", "Value": _rsi_interpretation(selected.get("rsi"))},
+                {"Metric": "Moving average alignment", "Value": _ma_alignment(selected)},
+                {"Metric": "Momentum", "Value": _momentum_view(selected)},
+                {"Metric": "Support", "Value": _display_price(_raw_value(selected, "stop_loss"))},
+                {"Metric": "Resistance", "Value": _display_price(_raw_value(selected, "target"))},
+            ],
+            columns=["Metric", "Value"],
+        ))
+    with analysis_right:
+        render_section("Strategy Validation", lambda: render_table(
+            rows=[
+                {"Field": "Why this trade was selected", "Value": rationale},
+                {"Field": "Rules passed", "Value": passed_rules},
+                {"Field": "Rules failed", "Value": failed_rules},
+            ],
+            columns=["Field", "Value"],
+        ))
+
+    risk_left, risk_right = st.columns([0.5, 0.5], gap="small")
+    with risk_left:
+        render_section("Risk Assessment", lambda: render_table(
+            rows=[
+                {"Metric": "Position risk", "Value": _display_value(selected.get("risk"))},
+                {"Metric": "Portfolio exposure", "Value": _display_price(portfolio.get("exposure"))},
+                {"Metric": "Reward/Risk", "Value": _display_numeric(_raw_value(selected, "reward_risk"))},
+                {"Metric": "Stop Loss", "Value": _display_price(_raw_value(selected, "stop_loss"))},
+                {"Metric": "Target", "Value": _display_price(_raw_value(selected, "target"))},
+            ],
+            columns=["Metric", "Value"],
+        ))
+    with risk_right:
+        render_section("Portfolio Impact", lambda: render_table(
+            rows=[
+                {"Metric": "Diversification impact", "Value": _diversification_view(portfolio)},
+                {"Metric": "Sector exposure", "Value": _display_value(_raw_value(selected, "sector"))},
+                {"Metric": "Cash remaining", "Value": _display_price(portfolio.get("cash"))},
+                {"Metric": "Position sizing", "Value": _position_sizing_view(selected, portfolio, state)},
+            ],
+            columns=["Metric", "Value"],
+        ))
+
+    reasons_left, reasons_right = st.columns([0.5, 0.5], gap="small")
+    with reasons_left:
+        render_section("Reasons FOR the trade", lambda: _render_reason_list(reasons_for, "Reason"))
+    with reasons_right:
+        render_section("Reasons AGAINST the trade", lambda: _render_reason_list(reasons_against, "Risk"))
+
+    render_information_banner(
+        "AI Conclusion",
+        _build_ai_conclusion(selected, recommendation, recommendation_confidence, portfolio),
+    )
+
+    render_section("Recommendation", lambda: render_table(
+        rows=[
+            {"Field": "Action", "Value": recommendation},
+            {"Field": "Confidence", "Value": recommendation_confidence},
+            {"Field": "Basis", "Value": _build_recommendation_basis(selected)},
+        ],
+        columns=["Field", "Value"],
+    ))
+
+
+def _render_ai_trade_summary(ticker: str, signal: str, strategy: str, confidence: str, current_price: str) -> None:
+    col1, col2, col3, col4, col5 = st.columns(5, gap="small")
+    cards = [
+        (col1, "Ticker", ticker),
+        (col2, "Signal", signal),
+        (col3, "Strategy", strategy),
+        (col4, "Confidence", confidence),
+        (col5, "Current Price", current_price),
+    ]
+    for column, title, value in cards:
+        with column:
+            render_kpi_card(title=title, value=value, footer_label="AI", footer_value="Review")
+
+
+def _diversification_view(portfolio: dict[str, Any]) -> str:
+    selected_position = portfolio.get("selected_position")
+    positions = portfolio.get("positions", {}) or {}
+    if selected_position is not None:
+        return "Diversification would not improve because the portfolio already holds this symbol."
+    if isinstance(positions, dict) and positions:
+        return "Diversification may improve because this symbol is not currently in the portfolio."
+    if isinstance(positions, dict):
+        return "Portfolio is empty, so diversification impact is not available from current scanner data."
+    return _REVIEW_DATA_UNAVAILABLE
+
+
+def _position_sizing_view(selected: dict[str, Any], portfolio: dict[str, Any], state: Any) -> str:
+    position_size = _raw_value(selected, "position_size")
+    if position_size is not None:
+        return _display_numeric(position_size)
+
+    selected_position = portfolio.get("selected_position")
+    if selected_position is not None:
+        return _display_value(getattr(selected_position, "quantity", None))
+
+    risk_engine = getattr(state, "risk_engine", None)
+    max_size = getattr(risk_engine, "max_position_size", None)
+    if max_size is not None:
+        return f"Configured max size: {_display_numeric(max_size)}"
+    return _REVIEW_DATA_UNAVAILABLE
+
+
+def _build_ai_conclusion(selected: dict[str, Any], recommendation: str, recommendation_confidence: str, portfolio: dict[str, Any]) -> str:
+    trend = _display_value(selected.get("trend"))
+    risk = _display_value(selected.get("risk"))
+    confidence = _display_confidence(selected.get("confidence"))
+    exposure = _display_price(portfolio.get("exposure"))
+    return (
+        f"The selected opportunity shows a {trend.lower()} backdrop with {confidence} confidence and a scanner risk rating of {risk}. "
+        f"Current portfolio exposure is {exposure}. Based on the existing strategy output and portfolio context, the AI review recommendation is {recommendation} with {recommendation_confidence} confidence."
+    )
+
+
+def _build_recommendation_basis(selected: dict[str, Any]) -> str:
+    return "; ".join(
+        [
+            f"Signal: {_display_value(selected.get('signal'))}",
+            f"Trend: {_display_value(selected.get('trend'))}",
+            f"RSI: {_display_numeric(selected.get('rsi'))}",
+            f"Risk: {_display_value(selected.get('risk'))}",
+        ]
     )
 
 
@@ -328,15 +754,19 @@ def _render_review_panel(results: list[dict[str, Any]], state: Any) -> None:
     if not results:
         return
 
-    review_key = st.session_state.get("scanner_review_key")
-    if not review_key:
-        review_key = results[0].get("ticker")
+    review_key = _ensure_review_selection(results)
     selected = next((row for row in results if str(row.get("ticker", "")).upper() == str(review_key).upper()), results[0])
 
     review_tabs = st.tabs(["Overview", "Indicators", "Risk", "Portfolio", "History", "AI"])
     with review_tabs[0]:
         with card():
-            st.markdown(f"<div class='tp-kpi-title'>Ticker</div><div class='tp-kpi-value'>{selected.get('ticker', '-')}</div>", unsafe_allow_html=True)
+            render_kpi_card(
+                title="Ticker",
+                value=str(selected.get("ticker", "-")),
+                footer_label="",
+                footer_value="",
+                show_footer=False,
+            )
             st.write(f"Direction: {selected.get('signal', 'HOLD')}")
             st.write(f"Strategy: {selected.get('strategy', 'RSI Mean Reversion')}")
             st.write(f"Entry: {selected.get('price', 'N/A')}")
@@ -370,8 +800,7 @@ def _render_review_panel(results: list[dict[str, Any]], state: Any) -> None:
             st.write(f"Previous Trades: {_coerce_value(selected.get('raw', {}).get('previous_trades'), 'No prior trades')}")
             st.write(f"Performance: {_coerce_value(selected.get('raw', {}).get('performance'), 'Monitor in portfolio workspace')}")
     with review_tabs[5]:
-        with card():
-            empty_state("AI analysis not yet enabled")
+        _render_ai_review_tab(selected, state)
 
     action_col1, action_col2, action_col3, action_col4 = st.columns([1, 1, 1, 1], gap="small")
     with action_col1:
@@ -386,6 +815,8 @@ def _render_review_panel(results: list[dict[str, Any]], state: Any) -> None:
 
 def render_scanner(state: Any) -> None:
     """Render the professional scanner decision workspace."""
+    apply_desktop_layout()
+
     service = getattr(state, "market_scanner_service", None)
     if service is None:
         st.error("Market Scanner Service unavailable.")
@@ -413,6 +844,7 @@ def render_scanner(state: Any) -> None:
         return
 
     results = _normalise(st.session_state.scanner_results)
+    _ensure_review_selection(results)
     _render_summary(results)
     spacer(1)
 
@@ -432,8 +864,14 @@ def render_scanner(state: Any) -> None:
     spacer(1)
     section("Review Workspace")
     if filtered_results:
-        review_options = [row.get("ticker") for row in filtered_results]
-        selected_review = st.selectbox("Select review target", review_options, key="scanner_review_key")
-        _render_review_panel(filtered_results, state)
+        review_options = _review_options(results)
+        _ensure_review_selection(results)
+        st.selectbox("Select review target", review_options, key="scanner_review_key")
+        _render_review_panel(results, state)
     else:
-        empty_state("No opportunities available for review")
+        if results:
+            empty_state("No opportunities match the current filters. The active review target is preserved below.")
+            st.selectbox("Select review target", _review_options(results), key="scanner_review_key")
+            _render_review_panel(results, state)
+        else:
+            empty_state("No opportunities available for review")

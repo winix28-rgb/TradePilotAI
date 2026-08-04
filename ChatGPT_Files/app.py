@@ -7,18 +7,7 @@ from typing import Any
 
 import streamlit as st
 
-from dashboard.layout import (
-    card,
-    empty_state,
-    render_desktop_layout,
-    render_information_banner,
-    render_kpi_card,
-    render_panel_header,
-    render_section,
-    render_table,
-    section,
-    spacer,
-)
+from dashboard.layout import card, empty_state, section, spacer
 from dashboard.shell import ApplicationShell
 from dashboard.styles import apply_theme
 from dashboard.theme import Theme
@@ -126,92 +115,47 @@ def render_dashboard(state: Any) -> None:
     _configure_streamlit_runtime()
     apply_theme()
 
-    st.markdown(
-        """
-        <style>
-        [data-testid="stMainBlockContainer"] {
-            max-width: 1600px;
-            min-width: 1400px;
-            padding-left: 24px;
-            padding-right: 24px;
-            padding-top: 20px;
-            padding-bottom: 20px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        @media (max-width: 1450px) {
-            [data-testid="stMainBlockContainer"] {
-                min-width: auto;
-                width: 100%;
-            }
-        }
-        div[data-testid="stHorizontalBlock"] {
-            gap: 20px !important;
-            align-items: stretch !important;
-        }
-        div[data-testid="stColumn"] > div {
-            height: 100%;
-        }
-        .tp-panel-title {
-            margin-bottom: 20px;
-        }
-        div[data-testid="stTable"] {
-            width: 100%;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
     _render_header(state)
-    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+    spacer(1)
     _render_kpi_row(state)
 
-    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-    scanner_col, approval_col, summary_col = st.columns([1, 1, 1], gap="small")
+    spacer(1)
+    scanner_col, approval_col, summary_col = st.columns([0.4, 0.3, 0.3], gap="small")
     with scanner_col:
-        with st.container(height=520):
-            _render_panel("Top Opportunities", lambda s: _render_scanner_panel(s), state)
+        _render_panel("Top Opportunities", lambda s: _render_scanner_panel(s), state)
     with approval_col:
-        with st.container(height=520):
-            _render_panel("Portfolio Status", lambda s: _render_approval_panel(s), state)
+        _render_panel("Portfolio Status", lambda s: _render_approval_panel(s), state)
     with summary_col:
-        with st.container(height=520):
-            _render_panel("Market Intelligence", lambda s: _render_ai_summary_panel(s), state)
+        _render_panel("Market Intelligence", lambda s: _render_ai_summary_panel(s), state)
 
-    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
-    positions_col, allocation_col, insight_col = st.columns([1, 1, 1], gap="small")
+    spacer(1)
+    positions_col, allocation_col = st.columns([0.7, 0.3], gap="small")
     with positions_col:
-        with st.container(height=520):
-            _render_panel("Open Positions", lambda s: _render_positions_panel(s), state)
+        _render_panel("Open Positions", lambda s: _render_positions_panel(s), state)
     with allocation_col:
-        with st.container(height=520):
-            _render_panel("Portfolio Allocation", lambda s: _render_allocation_panel(s), state)
-    with insight_col:
-        with st.container(height=520):
-            _render_panel("AI Trading Insight", lambda s: _render_activity_panel(s), state)
+        _render_panel("Portfolio Allocation", lambda s: _render_allocation_panel(s), state)
+
+    spacer(1)
+    with st.container():
+        _render_panel("Recent Activity", lambda s: _render_activity_panel(s), state)
 
 
 def _render_header(state: Any) -> None:
     """Render the trading-terminal header with the requested status summary."""
     header_col, status_col = st.columns([0.72, 0.28], gap="small")
-    last_update = getattr(getattr(state, "market_scanner_service", None), "last_scan_time", None) or datetime.now().strftime("%d %b %Y %I:%M %p")
 
     with header_col:
-        st.markdown("<h1 class='tp-page-title'>TODAY'S TRADING BRIEF</h1>", unsafe_allow_html=True)
         st.markdown(
-            "<div class='tp-page-caption'>AI-generated market assessment based on current market conditions, portfolio analysis and trading engine output.</div>",
+            "<h1 class='tp-page-title'>TradePilotAI Professional Trading Platform</h1>",
             unsafe_allow_html=True,
         )
+        st.markdown("<div class='tp-page-caption'>Operational view of the current trading environment</div>", unsafe_allow_html=True)
 
     with status_col:
         with card():
+            st.markdown("<div class='tp-status-badge'>● LIVE</div>", unsafe_allow_html=True)
             st.caption("Connection")
-            st.write("**LIVE**")
-            st.caption("Market")
-            st.write("**OPEN**")
-            st.caption("Last Update")
-            st.write(f"**{last_update}**")
+            st.write(f"**{_connection_status(state)}**")
 
 
 def _strip_workspace_navigation_markup(content: str) -> str:
@@ -254,80 +198,26 @@ def _strip_workspace_navigation_markup(content: str) -> str:
 
 
 def _render_kpi_row(state: Any) -> None:
-    """Render five KPI cards using existing application service outputs."""
+    """Render the top KPI row using the approved five dashboard metrics."""
     scanner_results = _get_scanner_results(state)
-    top_result = _top_scanner_result(scanner_results) or {}
-    snapshot = _risk_snapshot(state)
-    assessment = getattr(snapshot, "assessment", None)
-    approval_queue = getattr(state, "approval_queue", None) or getattr(state, "approval_service", None) or getattr(state, "approval_controller", None)
+    top_result = _top_scanner_result(scanner_results)
+    risk_snapshot = _risk_snapshot(state)
 
-    market_regime = str(top_result.get("trend") or "Neutral")
-    top_confidence = int(top_result.get("confidence", 0) or 0)
+    kpi_items = [
+        ("Market Regime", _market_regime(scanner_results), _market_regime_caption(scanner_results)),
+        ("Recommended Strategy", _recommended_strategy(top_result), _strategy_caption(top_result)),
+        ("Best Opportunity", _best_opportunity_value(top_result), _best_opportunity_caption(top_result)),
+        ("Risk Status", _risk_status(risk_snapshot), _risk_status_caption(risk_snapshot)),
+        ("Decision", _decision_value(state, top_result, risk_snapshot), _decision_caption(state, top_result)),
+    ]
 
-    strategy_name = "N/A"
-    raw_signal = top_result.get("raw") if isinstance(top_result, dict) else None
-    if raw_signal is not None:
-        strategy_name = str(getattr(raw_signal, "strategy_name", "") or "N/A")
-    if strategy_name == "N/A":
-        strategy_name = str(top_result.get("reason") or top_result.get("opportunity") or "N/A")
-
-    best_symbol = str(top_result.get("ticker") or top_result.get("symbol") or "No Signal")
-    best_score = int(top_result.get("score", top_confidence) or 0)
-    portfolio_fit = int(top_result.get("confidence", top_confidence) or 0)
-
-    risk_value = "N/A"
-    risk_caption = _format_currency(0.0)
-    if assessment is not None:
-        risk_value = f"{float(getattr(assessment, 'portfolio_risk_score', 0.0) or 0.0):.2f}%"
-        risk_caption = _format_currency(float(getattr(assessment, "total_exposure", 0.0) or 0.0))
-
-    decision_value = str(top_result.get("signal") or "HOLD").upper()
-    pending = getattr(approval_queue, "pending_trades", []) if approval_queue is not None else []
-    decision_caption = f"Pending approvals | {len(pending or [])}"
-
-    col1,col2,col3,col4,col5 = st.columns(5,gap="medium")
-
-    with col1:
-        render_kpi_card(
-            title="Market Regime",
-            value=market_regime,
-            footer_label="Confidence",
-            footer_value=f"{top_confidence}%",
-        )
-
-    with col2:
-        render_kpi_card(
-            title="Recommended Strategy",
-            value=strategy_name,
-            footer_label="Confidence",
-            footer_value=f"{top_confidence}%",
-        )
-
-    with col3:
-        render_kpi_card(
-            title="Best Opportunity",
-            value=best_symbol,
-            footer_label="Opportunity Score",
-            footer_value=str(best_score),
-            footer_secondary_label="Portfolio Fit",
-            footer_secondary_value=str(portfolio_fit),
-        )
-
-    with col4:
-        render_kpi_card(
-            title="Risk Status",
-            value=risk_value,
-            footer_label="Portfolio Risk",
-            footer_value=risk_caption,
-        )
-
-    with col5:
-        render_kpi_card(
-            title="Decision",
-            value=decision_value,
-            footer_label="Recommendation",
-            footer_value=decision_caption,
-        )
+    cols = st.columns(5, gap="small")
+    for column, (label, value, caption) in zip(cols, kpi_items):
+        with column:
+            with card():
+                st.markdown(f"<div class='tp-kpi-title'>{label}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='tp-kpi-value'>{value}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='tp-kpi-caption'>{caption}</div>", unsafe_allow_html=True)
 
 
 def _render_panel(title: str, renderer: Any, state: Any) -> None:
@@ -339,209 +229,143 @@ def _render_panel(title: str, renderer: Any, state: Any) -> None:
 
 
 def _render_scanner_panel(state: Any) -> None:
-    """Render the Market Review left panel content."""
+    """Render a compact scanner panel with only the top five opportunities."""
     scanner_results = _get_scanner_results(state)
-    results = scanner_results.get("results", []) if isinstance(scanner_results, dict) else []
+    if scanner_results is None:
+        empty_state("Scanner unavailable.")
+        return
 
     rows = []
-    for item in list(results)[:3]:
+    for row in scanner_results.get("results", [])[:5]:
         rows.append(
             {
-                "Ticker": str(item.get("ticker") or item.get("symbol") or "-"),
-                "Signal": str(item.get("signal") or "HOLD").upper(),
-                "Score": int(item.get("score", item.get("confidence", 0)) or 0),
-                "Portfolio Fit": int(item.get("confidence", 0) or 0),
-                "Action": str(item.get("signal") or "WATCH").upper(),
+                "Symbol": row.get("ticker") or row.get("symbol", "-"),
+                "Signal": str(row.get("signal", "HOLD")).upper(),
+                "Strategy": _recommended_strategy(row),
+                "Confidence": f"{int(row.get('confidence', 0))}%",
+                "Trend": row.get("trend", "Neutral"),
+                "Risk": row.get("risk", "Medium"),
             }
         )
-    render_table(
-        rows,
-        columns=["Ticker", "Signal", "Score", "Portfolio Fit", "Action"],
-        numeric_columns=["Score", "Portfolio Fit"],
-    )
+
+    if not rows:
+        empty_state("No opportunities available.")
+        return
+
+    st.table(rows)
+    if st.button("View Scanner", use_container_width=True):
+        st.session_state.current_page = "scanner"
+        st.rerun()
 
 
 def _render_approval_panel(state: Any) -> None:
-    """Render the Market Review centre panel content."""
-    snapshot = _risk_snapshot(state)
-    assessment = getattr(snapshot, "assessment", None)
-    risk_engine = getattr(state, "risk_engine", None)
-    approval_queue = getattr(state, "approval_queue", None) or getattr(state, "approval_service", None) or getattr(state, "approval_controller", None)
+    """Render a compact approval queue panel with up to five pending approvals."""
+    queue = getattr(state, "approval_queue", None) or getattr(state, "approval_service", None) or getattr(state, "approval_controller", None)
+    if queue is None:
+        empty_state("Approval queue unavailable.")
+        return
 
-    risk_value = "N/A"
-    cash_available = _format_currency(0.0)
-    max_position_size = _format_currency(float(getattr(risk_engine, "max_position_size", 0.0) or 0.0))
-    capital_allocation = "0.00%"
-    readiness = "Pending approvals: 0"
+    _load_pending_approvals(state)
 
-    if assessment is not None:
-        risk_value = f"{float(getattr(assessment, 'portfolio_risk_score', 0.0) or 0.0):.2f}%"
-        cash_available = _format_currency(float(getattr(assessment, "available_cash", 0.0) or 0.0))
-        capital_allocation = f"{float(getattr(assessment, 'portfolio_risk_score', 0.0) or 0.0):.2f}%"
+    pending = []
+    for item in getattr(queue, "pending_trades", [])[:5]:
+        pending.append(
+            {
+                "Ticker": getattr(item, "symbol", "-"),
+                "Direction": str(getattr(item, "signal", "") or "").upper(),
+                "Confidence": f"{int(getattr(item, 'confidence', 0))}%",
+                "Entry": _format_currency(getattr(item, "price", 0.0) or 0.0),
+                "Target": _format_currency(getattr(item, "target", 0.0) or 0.0),
+            }
+        )
 
-    pending = getattr(approval_queue, "pending_trades", []) if approval_queue is not None else []
-    readiness = f"Pending approvals: {len(pending or [])}"
+    if not pending:
+        empty_state("No pending approvals.")
+        return
 
-    st.write("Portfolio Risk")
-    st.write(f"**{risk_value}**")
-
-    st.write("Cash Available")
-    st.write(f"**{cash_available}**")
-
-    st.write("Maximum Position Size")
-    st.write(f"**{max_position_size}**")
-
-    st.write("Capital Allocation")
-    st.write(f"**{capital_allocation}**")
-
-    st.write("Portfolio Ready")
-    st.write(f"**{readiness}**")
+    st.table(pending)
 
 
 def _render_positions_panel(state: Any) -> None:
-    """Render the Open Positions panel content."""
+    """Render the open positions table in a compact professional format."""
     portfolio = getattr(state, "portfolio_service", None) or getattr(state, "portfolio_manager", None)
     portfolio_state = getattr(portfolio, "state", None)
-    snapshot = _risk_snapshot(state)
-    assessment = getattr(snapshot, "assessment", None)
-
-    deployed_value = _format_currency(float(getattr(assessment, "total_exposure", 0.0) or 0.0)) if assessment is not None else _format_currency(0.0)
-    exposure_value = f"{float(getattr(assessment, 'portfolio_risk_score', 0.0) or 0.0):.2f}%" if assessment is not None else "0.00%"
-    average_risk_value = f"{float(getattr(assessment, 'value_at_risk', 0.0) or 0.0):.2f}" if assessment is not None else "0.00"
-    scanner_service = getattr(state, "market_scanner_service", None)
-    next_review = str(getattr(scanner_service, "last_scan_time", "") or "Awaiting scanner update")
-
     if portfolio_state is None:
-        st.write("Status")
-        st.write("**No Open Positions**")
-
-        st.write("Capital Deployed")
-        st.write(f"**{deployed_value}**")
-
-        st.write("Portfolio Exposure")
-        st.write(f"**{exposure_value}**")
-
-        st.write("Average Risk")
-        st.write(f"**{average_risk_value}%**")
-
-        st.write("Next Review")
-        st.write(f"**{next_review}**")
+        empty_state("No open positions")
         return
 
     positions = [position for position in getattr(portfolio_state, "positions", {}).values() if getattr(position, "quantity", 0) > 0]
     if not positions:
-        st.write("Status")
-        st.write("**No Open Positions**")
-
-        st.write("Capital Deployed")
-        st.write(f"**{deployed_value}**")
-
-        st.write("Portfolio Exposure")
-        st.write(f"**{exposure_value}**")
-
-        st.write("Average Risk")
-        st.write(f"**{average_risk_value}%**")
-
-        st.write("Next Review")
-        st.write(f"**{next_review}**")
+        empty_state("No open positions")
         return
-
-    risk_rows = {}
-    if snapshot is not None:
-        risk_rows = {getattr(item, "symbol", ""): item for item in getattr(snapshot, "positions", [])}
 
     rows = []
     for position in positions:
-        symbol = getattr(position, "symbol", "-")
-        risk_row = risk_rows.get(symbol)
-        pnl_value = _format_currency(float(getattr(risk_row, "unrealised_pnl", 0.0) or 0.0))
-        risk_value = f"{float(getattr(risk_row, 'risk_percent', 0.0) or 0.0):.2f}%"
+        quantity = float(getattr(position, "quantity", 0) or 0)
         average_price = float(getattr(position, "average_price", 0.0) or 0.0)
         market_price = float(getattr(position, "market_price", 0.0) or 0.0)
         rows.append(
             {
-                "Ticker": symbol,
-                "Direction": str(getattr(position, "direction", "LONG") or "LONG").upper(),
+                "Ticker": getattr(position, "symbol", "-"),
+                "Qty": int(quantity) if quantity.is_integer() else quantity,
                 "Entry": _format_currency(average_price),
                 "Current": _format_currency(market_price),
-                "P/L": pnl_value,
-                "Risk": risk_value,
+                "P/L": _format_currency((market_price - average_price) * quantity),
+                "Risk": _format_currency(float(getattr(position, 'exposure', 0.0) or 0.0)),
             }
         )
-    render_table(
-        rows,
-        columns=["Ticker", "Direction", "Entry", "Current", "P/L", "Risk"],
-    )
+    st.table(rows)
 
 
 def _render_allocation_panel(state: Any) -> None:
-    """Render the Portfolio Allocation panel content."""
-    snapshot = _risk_snapshot(state)
-    positions = getattr(snapshot, "positions", []) if snapshot is not None else []
+    """Render the portfolio allocation summary."""
+    portfolio = getattr(state, "portfolio_service", None) or getattr(state, "portfolio_manager", None)
+    portfolio_state = getattr(portfolio, "state", None)
+    positions = []
+    cash_value = 0.0
+    if portfolio_state is not None:
+        positions = [position for position in getattr(portfolio_state, "positions", {}).values() if getattr(position, "quantity", 0) > 0]
+        cash_value = float(getattr(portfolio_state, "cash", 0.0) or 0.0)
+
+    holding_value = sum(float(getattr(item, "exposure", 0.0) or 0.0) for item in positions)
+    total_value = cash_value + holding_value
+    if total_value <= 0:
+        total_value = 1.0
 
     rows = []
-    for item in list(positions)[:5]:
+    if cash_value > 0 or not positions:
+        rows.append({"Holding": "Cash", "Allocation": f"{(cash_value / total_value) * 100.0:.1f}%", "Value": _format_currency(cash_value)})
+
+    for position in sorted(positions, key=lambda item: float(getattr(item, "exposure", 0.0) or 0.0), reverse=True):
+        exposure = float(getattr(position, "exposure", 0.0) or 0.0)
         rows.append(
             {
-                "Asset": str(getattr(item, "symbol", "-")),
-                "Allocation %": f"{float(getattr(item, 'exposure_percent', 0.0) or 0.0):.2f}%",
+                "Holding": getattr(position, "symbol", "-"),
+                "Allocation": f"{(exposure / total_value) * 100.0:.1f}%",
+                "Value": _format_currency(exposure),
             }
         )
 
-    render_table(
-        rows,
-        columns=["Asset", "Allocation %"],
-    )
+    st.table(rows)
 
 
 def _render_activity_panel(state: Any) -> None:
-    """Render the bottom dashboard insight content."""
-    st.write("AI Trading Insight")
-
-    st.write("Primary Insight")
-    st.write("Current market conditions favour trend-following strategies.")
-
-    st.write("Risk Assessment")
-    st.write("Portfolio risk remains LOW.")
-
-    st.write("Market Condition")
-    st.write("FTSE 100 breadth remains positive.")
-
-    st.write("Recommended Action")
-    st.write("Monitor SHEL for confirmation before execution.")
+    """Render the recent activity list."""
+    for entry in _recent_activity_items(state):
+        st.write(f"• {entry}")
 
 
 def _render_ai_summary_panel(state: Any) -> None:
-    """Render the Market Intelligence panel content."""
+    """Render the reserved AI summary panel."""
     scanner_results = _get_scanner_results(state)
-    top_result = _top_scanner_result(scanner_results) or {}
+    top_result = _top_scanner_result(scanner_results)
     snapshot = _risk_snapshot(state)
-    assessment = getattr(snapshot, "assessment", None)
-    approval_queue = getattr(state, "approval_queue", None) or getattr(state, "approval_service", None) or getattr(state, "approval_controller", None)
+    assessment = getattr(snapshot, "assessment", None) if snapshot is not None else None
 
-    regime_value = str(top_result.get("trend") or "Neutral")
-    trend_value = str(top_result.get("reason") or top_result.get("opportunity") or "No active trend signal")
-    opportunity_value = str(top_result.get("ticker") or top_result.get("symbol") or "No Signal")
-    portfolio_risk_value = f"{float(getattr(assessment, 'portfolio_risk_score', 0.0) or 0.0):.2f}%" if assessment is not None else "N/A"
-
-    recommended_action = str(top_result.get("signal") or "HOLD").upper()
-    if approval_queue is not None and getattr(approval_queue, "last_action", None):
-        recommended_action = str((approval_queue.last_action or {}).get("reason") or recommended_action)
-
-    st.write("Market Regime")
-    st.write(f"**{regime_value}**")
-
-    st.write("Market Trend")
-    st.write(f"**{trend_value}**")
-
-    st.write("Best Opportunity")
-    st.write(f"**{opportunity_value}**")
-
-    st.write("Portfolio Risk")
-    st.write(f"**{portfolio_risk_value}**")
-
-    st.write("Recommended Action")
-    st.write(f"**{recommended_action}**")
+    st.write(f"Market sentiment: {_market_regime(scanner_results)}")
+    st.write(f"Best opportunity: {_best_opportunity_summary(top_result)}")
+    st.write(f"Portfolio risk summary: {_portfolio_risk_summary(assessment)}")
+    st.write(f"Recommended next action: {_recommended_next_action(state, top_result, assessment)}")
 
 
 def _get_scanner_results(state: Any) -> dict[str, Any] | None:
@@ -609,7 +433,13 @@ def _market_regime_caption(scanner_results: dict[str, Any] | None) -> str:
 
 
 def _recommended_strategy(top_result: dict[str, Any] | None) -> str:
-    return "Trend Following"
+    if top_result is None:
+        return "RSI Mean Reversion"
+    raw_signal = top_result.get("raw")
+    strategy_name = getattr(raw_signal, "strategy_name", None) if raw_signal is not None else None
+    if strategy_name:
+        return str(strategy_name)
+    return "RSI Mean Reversion"
 
 
 def _strategy_caption(top_result: dict[str, Any] | None) -> str:
@@ -654,7 +484,12 @@ def _risk_status(snapshot: Any) -> str:
 
 
 def _risk_status_caption(snapshot: Any) -> str:
-    return "Portfolio Risk | $0.00"
+    assessment = getattr(snapshot, "assessment", None)
+    if assessment is None:
+        return "No open portfolio exposure"
+    exposure = float(getattr(assessment, "total_exposure", 0.0) or 0.0)
+    buying_power = float(getattr(assessment, "buying_power", 0.0) or 0.0)
+    return f"Exposure {_format_currency(exposure)} | Buying power {_format_currency(buying_power)}"
 
 
 def _decision_value(state: Any, top_result: dict[str, Any] | None, snapshot: Any) -> str:
@@ -668,7 +503,11 @@ def _decision_value(state: Any, top_result: dict[str, Any] | None, snapshot: Any
 
 
 def _decision_caption(state: Any, top_result: dict[str, Any] | None) -> str:
-    return "Recommendation | Moderate"
+    pending_count = int(_pending_trade_count(state))
+    if pending_count > 0 and top_result is not None:
+        symbol = top_result.get("ticker") or top_result.get("symbol") or "trade"
+        return f"{pending_count} pending approval | {symbol} first in queue"
+    return "No approvals awaiting action"
 
 
 def _recent_activity_items(state: Any) -> list[str]:
@@ -737,18 +576,14 @@ def _portfolio_risk_summary(assessment: Any) -> str:
 
 
 def _recommended_next_action(state: Any, top_result: dict[str, Any] | None, assessment: Any) -> str:
-    return "\n".join(
-        [
-            "Strong trend alignment",
-            "Positive momentum",
-            "Low portfolio risk",
-            "Excellent strategy fit",
-            "Diversification remains healthy",
-            "Sector exposure is balanced",
-            "Risk impact is manageable",
-            "Cash availability supports the trade",
-        ]
-    )
+    pending_count = int(_pending_trade_count(state))
+    if pending_count > 0 and top_result is not None:
+        symbol = top_result.get("ticker") or top_result.get("symbol") or "the lead setup"
+        return f"Review the pending approval queue and action {symbol} first."
+    if top_result is not None and _risk_status(type("Snapshot", (), {"assessment": assessment})()) != "High":
+        symbol = top_result.get("ticker") or top_result.get("symbol") or "the lead setup"
+        return f"Monitor {symbol} for confirmation and queue it for approval if conditions hold."
+    return "Maintain current positioning and wait for the next confirmed scanner signal."
 
 
 def _format_currency(value: float) -> str:
@@ -756,7 +591,14 @@ def _format_currency(value: float) -> str:
 
 
 def _pending_trade_count(state: Any) -> str:
-    return "0"
+    """Count pending approvals from the existing queue service."""
+    queue = getattr(state, "approval_queue", None) or getattr(state, "approval_service", None) or getattr(state, "approval_controller", None)
+    if queue is None:
+        return "0"
+    pending = getattr(queue, "pending_trades", None)
+    if pending is None:
+        return "0"
+    return str(len(pending))
 
 
 def render_system_status(state: Any) -> None:
@@ -776,109 +618,10 @@ def render_system_status(state: Any) -> None:
         ("Diagnostics", _diagnostic_value(performance)),
     ]
 
-    render_desktop_layout()
-    render_panel_header("Settings", status="LIVE")
-
-    kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5, gap="small")
-    with kpi1:
-        render_kpi_card(
-            title="Trading Engine",
-            value=_service_name(controller),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
-    with kpi2:
-        render_kpi_card(
-            title="Broker Connection",
-            value=_connection_status(state),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
-    with kpi3:
-        render_kpi_card(
-            title="Trading Mode",
-            value=_mode_value(state),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
-    with kpi4:
-        render_kpi_card(
-            title="Broker",
-            value=_service_name(broker) or _service_name(live_service),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
-    with kpi5:
-        render_kpi_card(
-            title="Diagnostics",
-            value=_diagnostic_value(performance),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
-
-    main_left, main_right = st.columns([0.6, 0.4], gap="small")
-    with main_left:
-        render_section(
-            "Runtime Status",
-            lambda: render_table(
-                rows=[
-                    {"Setting": label, "Value": value}
-                    for label, value in status_items
-                ],
-                columns=["Setting", "Value"],
-            ),
-        )
-    with main_right:
-        render_section(
-            "Connection Details",
-            lambda: render_table(
-                rows=[
-                    {"Detail": "Broker Connection", "Value": _connection_status(state)},
-                    {"Detail": "Trading Mode", "Value": _mode_value(state)},
-                    {"Detail": "Broker", "Value": _service_name(broker) or _service_name(live_service)},
-                    {"Detail": "Diagnostics", "Value": _diagnostic_value(performance)},
-                ],
-                columns=["Detail", "Value"],
-            ),
-        )
-
-    bottom_left, bottom_right = st.columns([0.5, 0.5], gap="small")
-    with bottom_left:
-        render_section(
-            "Engine Snapshot",
-            lambda: render_table(
-                rows=[
-                    {"Field": "Trading Engine", "Value": _service_name(controller)},
-                    {"Field": "Broker", "Value": _service_name(broker) or _service_name(live_service)},
-                ],
-                columns=["Field", "Value"],
-            ),
-        )
-    with bottom_right:
-        render_section(
-            "Diagnostics Snapshot",
-            lambda: render_table(
-                rows=[
-                    {"Field": "Broker Connection", "Value": _connection_status(state)},
-                    {"Field": "Trading Mode", "Value": _mode_value(state)},
-                    {"Field": "Diagnostics", "Value": _diagnostic_value(performance)},
-                ],
-                columns=["Field", "Value"],
-            ),
-        )
-
-    render_information_banner(
-        "System Notes",
-        "\n".join(
-            [
-                f"Trading Engine: {_service_name(controller)}",
-                f"Broker Connection: {_connection_status(state)}",
-                f"Trading Mode: {_mode_value(state)}",
-                f"Broker: {_service_name(broker) or _service_name(live_service)}",
-                f"Diagnostics: {_diagnostic_value(performance)}",
-            ]
-        ),
-    )
+    for label, value in status_items:
+        st.write(f"**{label}**")
+        st.write(value)
+        st.write("")
 
 
 def _service_name(obj: Any) -> str:

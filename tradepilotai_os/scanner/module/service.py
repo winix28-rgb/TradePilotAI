@@ -14,6 +14,8 @@ from tradepilotai_os.models.trade_signal import TradeSignal
 from tradepilotai_os.scanner.market_scanner import MarketScanner
 from tradepilotai_os.strategy.strategy_engine import StrategyEngine
 
+from .opportunity_scoring import OpportunityScoringEngine
+
 
 class ScannerService:
     """Run the live scanner workflow using the existing market-data and strategy stack."""
@@ -24,11 +26,13 @@ class ScannerService:
         data_provider: YahooMarketDataProvider | None = None,
         indicator_engine: IndicatorEngine | None = None,
         strategy_engine: StrategyEngine | None = None,
+        scoring_engine: OpportunityScoringEngine | None = None,
     ) -> None:
         self.market_scanner = market_scanner or MarketScanner()
         self.data_provider = data_provider or YahooMarketDataProvider()
         self.indicator_engine = indicator_engine or IndicatorEngine()
         self.strategy_engine = strategy_engine or StrategyEngine()
+        self.scoring_engine = scoring_engine or OpportunityScoringEngine()
         self.last_scan_time = ""
         self.scan_duration = "0s"
         self.signals_found = 0
@@ -98,6 +102,9 @@ class ScannerService:
                     "signal": signal.signal,
                     "confidence": signal.confidence,
                     "risk_rating": self._risk_rating(signal.confidence, volatility),
+                    "overall_score": row["overall_score"],
+                    "score_breakdown": row["score_breakdown"],
+                    "ranking_reason": row["ranking_reason"],
                 })
             elif signal.signal == "SELL":
                 sell_candidates.append({
@@ -109,6 +116,9 @@ class ScannerService:
                     "signal": signal.signal,
                     "confidence": signal.confidence,
                     "risk_rating": self._risk_rating(signal.confidence, volatility),
+                    "overall_score": row["overall_score"],
+                    "score_breakdown": row["score_breakdown"],
+                    "ranking_reason": row["ranking_reason"],
                 })
 
             events.append({"name": f"{symbol} Scan", "status": "Complete", "message": signal.signal})
@@ -159,6 +169,15 @@ class ScannerService:
         signal_label = str(signal.signal or "HOLD").upper()
         trend = self._trend(signal)
         reason = " | ".join(signal.reasons) if signal.reasons else "Strategy signal generated"
+        score = self.scoring_engine.evaluate(
+            symbol=symbol,
+            signal=signal_label,
+            confidence=int(signal.confidence),
+            volatility=volatility,
+            raw_signal=signal,
+            base_reason=reason,
+        )
+        score_payload = score.to_payload()
 
         return {
             "ticker": symbol,
@@ -172,6 +191,14 @@ class ScannerService:
             "reason": reason,
             "opportunity": reason,
             "price": round(signal.price, 2),
+            "overall_score": score_payload["overall_score"],
+            "score_breakdown": score_payload["score_breakdown"],
+            "ranking_reason": score_payload["ranking_reason"],
+            "technical_score": score_payload["technical_score"],
+            "strategy_score": score_payload["strategy_score"],
+            "risk_score": score_payload["risk_score"],
+            "portfolio_score": score_payload["portfolio_score"],
+            "market_score": score_payload["market_score"],
             "raw": signal,
         }
 
