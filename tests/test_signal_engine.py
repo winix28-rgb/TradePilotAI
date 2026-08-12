@@ -18,7 +18,7 @@ def test_strategy_engine():
 
     print("\nDownloading market data...")
 
-    data = provider.history("RR")
+    data = provider.history("RR", interval="1h")
 
     print(f"Downloaded {len(data)} candles")
 

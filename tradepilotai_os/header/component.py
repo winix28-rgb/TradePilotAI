@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -29,7 +29,7 @@ class Header:
         market_status = self._get_market_status()
         refresh_status = self._get_refresh_status()
         current_user = self._get_current_user()
-        current_time = datetime.now().strftime("%H:%M:%S")
+        current_time = datetime.now(timezone.utc).strftime("%H:%M:%SZ")
 
         return "\n".join(
             [

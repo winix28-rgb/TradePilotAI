@@ -25,8 +25,11 @@ class YahooMarketDataProvider(MarketDataProvider):
         self,
         symbol: str,
         period: str = "6mo",
-        interval: str = "1d",
+        interval: str | None = None,
     ):
+
+        if interval is None or not str(interval).strip():
+            raise ValueError("A timeframe interval must be provided explicitly.")
 
         yahoo_symbol = self._resolve_symbol(symbol)
 

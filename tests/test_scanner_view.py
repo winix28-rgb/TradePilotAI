@@ -1,6 +1,18 @@
 import pytest
 
-from dashboard.views.scanner_view import _filter_results, _normalise, _seed_scanner_filter_state, reset_scanner_filters
+from dashboard.views.scanner_view import (
+    _assessment_component_from_selected,
+    _decision_narrative,
+    _filter_results,
+    _normalise,
+    _recommendation,
+    _seed_scanner_filter_state,
+    _suggested_trade_rows_with_state,
+    reset_scanner_filters,
+)
+from tradepilotai_os.models.trade_signal import TradeSignal
+from tradepilotai_os.risk.risk_engine import RiskEngine
+from tradepilotai_os.scanner.module.service import ScannerService
 
 
 def test_normalise_converts_scan_payload_to_consistent_rows():
@@ -135,3 +147,76 @@ def test_reset_scanner_filters_callback_restores_defaults():
     assert st.session_state.scanner_sector == ""
     assert st.session_state.scanner_confidence == 0
     assert st.session_state.scanner_min_score == 50
+
+
+def test_normalise_preserves_decision_review_payloads():
+    signal = TradeSignal(
+        symbol="TSLA",
+        signal="BUY",
+        confidence=84,
+        price=250.5,
+        rsi=61.2,
+        ema12=255.0,
+        ema26=248.0,
+        stop_loss=242.0,
+        target=268.0,
+        reasons=["RSI recovery", "EMA bullish crossover"],
+    )
+    row = ScannerService()._to_result_row(symbol="TSLA", signal=signal, volatility=0.02)
+
+    normalised = _normalise({"results": [row]})
+
+    assert normalised[0]["raw"]["decision_result"]["decision"] == row["decision_result"]["decision"]
+    assert _assessment_component_from_selected(normalised[0], "technical")["score"] == row["technical_component"]["score"]
+    assert _assessment_component_from_selected(normalised[0], "risk")["score"] == row["risk_component"]["score"]
+
+
+def test_recommendation_and_narrative_share_same_decision_object():
+    signal = TradeSignal(
+        symbol="TSLA",
+        signal="BUY",
+        confidence=84,
+        price=250.5,
+        rsi=61.2,
+        ema12=255.0,
+        ema26=248.0,
+        stop_loss=242.0,
+        target=268.0,
+        reasons=["RSI recovery", "EMA bullish crossover"],
+    )
+    selected = _normalise({"results": [ScannerService()._to_result_row(symbol="TSLA", signal=signal, volatility=0.02)]})[0]
+
+    recommendation, confidence = _recommendation(selected)
+    narrative = _decision_narrative(selected)
+
+    assert recommendation.replace(" ", "_") == selected["raw"]["decision_result"]["decision"]
+    assert confidence in narrative
+    assert f"The Decision Engine recommends {recommendation}" in narrative
+
+
+def test_suggested_trade_rows_reuse_risk_engine_output():
+    signal = TradeSignal(
+        symbol="TSLA",
+        signal="BUY",
+        confidence=84,
+        price=250.5,
+        rsi=61.2,
+        ema12=255.0,
+        ema26=248.0,
+        stop_loss=242.0,
+        target=268.0,
+        reasons=["RSI recovery", "EMA bullish crossover"],
+    )
+    selected = _normalise({"results": [ScannerService()._to_result_row(symbol="TSLA", signal=signal, volatility=0.02)]})[0]
+    state = type("State", (), {"risk_engine": RiskEngine(account_balance=100000.0, risk_per_trade=0.01, max_position_size=1000.0)})()
+
+    rows = _suggested_trade_rows_with_state(selected, state)
+    values = {row["Field"]: row["Value"] for row in rows}
+
+    assert values["Suggested Action"] == "BUY"
+    assert values["Current Price"] == "250.5"
+    assert values["Suggested Stop"] == "242.0"
+    assert values["Suggested Target"] == "268.0"
+    assert values["Suggested Position Size"] == "117.00"
+    assert values["Capital at Risk"] == "$1,000.00"
+    assert values["Expected Reward"] == "$2,000.00"

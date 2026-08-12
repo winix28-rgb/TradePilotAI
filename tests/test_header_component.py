@@ -48,3 +48,11 @@ def test_header_handles_missing_services_gracefully():
     rendered = header.render()
 
     assert "Unavailable" in rendered
+
+
+def test_header_current_time_uses_utc_clock():
+    header = Header()
+    rendered = header.render()
+
+    current_time_line = next(line for line in rendered.splitlines() if line.startswith("Current Time: "))
+    assert current_time_line.endswith("Z")

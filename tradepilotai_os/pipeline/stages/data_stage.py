@@ -18,7 +18,16 @@ class DataStage(PipelineStage):
         """Load market data for the current symbol into the context."""
 
         symbol = context.get("symbol")
-        interval = context.get("interval", "1d")
+        interval = context.get("interval")
+        if interval is None:
+            strategy = context.get("strategy")
+            interval = getattr(strategy, "primary_timeframe", None) if strategy is not None else None
+        if interval is None:
+            config = context.get("config")
+            if config is not None and hasattr(config, "strategy"):
+                interval = config.strategy.get("timeframe")
+        if interval is None:
+            raise ValueError("A trading interval must be provided before loading market data.")
         period = context.get("period", "180d")
         if symbol is None:
             return

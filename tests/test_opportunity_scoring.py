@@ -92,3 +92,11 @@ def test_scanner_service_result_row_includes_scoring_fields() -> None:
     assert row["risk_score"] == 50.0
     assert row["portfolio_score"] == 50.0
     assert row["market_score"] == 50.0
+    assert row["decision_result"]["decision"]
+    assert row["technical_component"]["score"] == 50.0
+    assert row["risk_component"]["score"] == 50.0
+    assert row["ema12"] == 255.0
+    assert row["ema26"] == 248.0
+    assert row["stop_loss"] == 242.0
+    assert row["target"] == 268.0
+    assert row["reasons"] == ["RSI recovery", "EMA bullish crossover"]

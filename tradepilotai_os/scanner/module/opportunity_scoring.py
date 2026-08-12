@@ -92,6 +92,8 @@ class OpportunityScore:
             payload["portfolio"] = self.portfolio.to_payload()
         if self.market is not None:
             payload["market"] = self.market.to_payload()
+        if self.decision_result is not None:
+            payload["decision_result"] = self.decision_result.to_payload()
 
         return payload
 

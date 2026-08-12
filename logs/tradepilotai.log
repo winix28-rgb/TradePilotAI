@@ -271,3 +271,330 @@
 {"timestamp": "2026-08-04T15:59:04.624796+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
 {"timestamp": "2026-08-04T16:03:17.712191+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
 {"timestamp": "2026-08-04T16:03:17.712708+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T16:53:34.543274+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T16:53:34.543694+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T16:53:34.544965+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T16:53:34.545048+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T16:55:40.777882+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T16:55:40.778212+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T16:55:40.779375+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T16:55:40.779459+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T16:59:41.151370+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T16:59:41.151698+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T16:59:41.152782+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T16:59:41.152875+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T17:10:10.528842+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T17:10:10.529632+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T17:10:10.530841+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T17:10:10.530935+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T17:18:18.035638+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T17:18:18.035951+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T17:18:18.037009+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T17:18:18.037080+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T17:22:18.305489+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T17:22:18.305897+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-04T17:22:18.306922+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-04T17:22:18.306990+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T06:43:16.930515+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T06:43:16.931204+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T06:43:16.932949+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T06:43:16.933078+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T06:57:50.009757+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T06:57:50.010352+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T06:57:50.011396+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T06:57:50.011466+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:00:41.155927+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:00:41.156607+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:00:41.158011+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:00:41.158110+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:07:01.376594+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:07:01.376749+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:07:01.377744+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:07:01.377808+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:10:43.558959+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:10:43.559136+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:10:43.560165+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:10:43.560233+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:11:46.953335+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:11:46.953620+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:11:46.954914+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:11:46.955007+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:16:41.237279+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:16:41.237890+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:16:41.238915+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:16:41.238986+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:26:42.859364+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:26:42.859928+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:26:42.861052+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:26:42.861131+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:28:10.870188+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:28:10.870343+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:28:10.871321+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:28:10.871383+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:33:32.838960+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:33:32.839657+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:33:32.840836+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:33:32.840929+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:43:00.695862+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:43:00.696459+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:43:00.697494+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:43:00.697568+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:45:29.789092+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:45:29.789262+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:45:29.790295+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:45:29.790363+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:47:02.040379+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:47:02.040548+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T07:47:02.041941+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T07:47:02.042053+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T08:07:50.591895+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T08:07:50.592283+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T08:16:29.973097+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T08:16:29.973703+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T08:19:24.058244+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T08:19:24.058742+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T08:53:19.486368+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T08:53:19.486842+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:22:45.208261+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:22:45.208598+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:23:20.721192+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:23:20.721348+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:31:39.327390+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:31:39.328130+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:32:08.156725+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:32:08.156876+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:32:33.730026+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:32:33.730168+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:33:12.130178+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:33:12.130352+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:33:37.141562+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:33:37.141735+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:34:44.957293+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:34:44.957460+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:35:06.545867+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:35:06.546022+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:39:24.840207+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:39:24.840592+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:41:18.528655+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:41:18.528892+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:46:05.440831+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:46:05.441171+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T10:54:06.466541+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:54:06.467105+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: LLOY"}}}
+$LLOY: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['LLOY']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+$MKS: possibly delisted; no price data found  (period=366d)
+
+1 Failed download:
+['MKS']: possibly delisted; no price data found  (period=366d)
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: BARC"}}}
+$BARC: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['BARC']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+$LLOY: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['LLOY']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+$MKS: possibly delisted; no price data found  (period=366d)
+
+1 Failed download:
+['MKS']: possibly delisted; no price data found  (period=366d)
+$BARC: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['BARC']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+{"timestamp": "2026-08-05T10:55:45.117300+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T10:55:45.117668+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T12:33:59.837324+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T12:33:59.837890+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ZZZZ"}}}
+$ZZZZ: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['ZZZZ']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+Backtest data load failed for ZZZZ: No historical data returned
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: ZZZZ"}}}
+$ZZZZ: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['ZZZZ']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+Backtest data load failed for ZZZZ: No historical data returned
+$NOPE: possibly delisted; no price data found  (period=366d)
+
+1 Failed download:
+['NOPE']: possibly delisted; no price data found  (period=366d)
+Backtest data load failed for NOPE: No historical data returned
+{"timestamp": "2026-08-05T12:43:36.593429+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T12:43:36.593844+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T12:55:05.985084+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T12:55:05.985764+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T12:57:41.268798+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T12:57:41.269825+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T13:07:14.391042+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T13:07:14.391786+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T13:13:55.748120+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T13:13:55.749106+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T13:18:28.413536+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T13:18:28.417708+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T13:20:22.606060+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T13:20:22.606581+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T13:31:33.346727+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T13:31:33.347394+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T13:39:20.384660+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T13:39:20.385249+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T14:03:35.291266+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T14:03:35.291909+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T14:22:47.209625+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T14:22:47.210498+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T14:38:56.400224+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T14:38:56.403294+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T14:49:43.138181+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T14:49:43.138728+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "3145154d-e0a4-45e6-bcc6-0326108505ff"}}
+{"timestamp": "2026-08-05T14:49:43.169629+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA"}}
+{"timestamp": "2026-08-05T14:49:43.169744+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA", "order_id": "224c940e-c633-47c9-b775-49d43508acbd"}}
+{"timestamp": "2026-08-05T14:49:43.171294+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "BP"}}
+{"timestamp": "2026-08-05T14:49:43.171370+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "BP", "order_id": "fec6c565-c9b6-43c2-8a38-54c2836dcb6b"}}
+{"timestamp": "2026-08-05T14:49:43.183060+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA"}}
+{"timestamp": "2026-08-05T14:49:43.183176+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA", "order_id": "a596aec5-2564-4223-9228-ee4019be60d0"}}
+{"timestamp": "2026-08-05T14:50:05.836625+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T14:50:05.836864+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "3fc0cd60-e0ee-4432-be61-c5b21aa585eb"}}
+{"timestamp": "2026-08-05T14:50:05.837899+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA"}}
+{"timestamp": "2026-08-05T14:50:05.838003+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA", "order_id": "06ecf49a-c8e2-477e-8a51-c828ee7d5c96"}}
+{"timestamp": "2026-08-05T14:50:05.838550+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "BP"}}
+{"timestamp": "2026-08-05T14:50:05.838614+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "BP", "order_id": "382ab613-c197-4b77-bbcc-c969f09400f9"}}
+{"timestamp": "2026-08-05T14:50:05.872710+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA"}}
+{"timestamp": "2026-08-05T14:50:05.872795+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA", "order_id": "ee80b66e-04d4-41ba-9c63-b75f40885bea"}}
+{"timestamp": "2026-08-05T14:50:11.747274+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T14:50:11.747469+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T14:52:31.909970+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T14:52:31.912867+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "b9468288-1d29-4799-b847-aa16bc37162d"}}
+{"timestamp": "2026-08-05T14:52:45.821103+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T14:52:45.821720+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "cd3d7c1b-1bca-435b-bbb0-63e630eed8ec"}}
+{"timestamp": "2026-08-05T15:12:50.596654+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T15:12:50.597658+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T15:26:45.161888+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T15:26:45.165972+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T15:27:07.481658+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T15:27:07.481866+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-05T15:33:59.302667+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-05T15:33:59.303329+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+$RR.L: possibly delisted; no price data found  (period=6mo) (Yahoo error = "Error occurred while retrieving timeseries, keys: [RedisKey [key=TF[1,YF_HIST,SPLITS][0P00007OU0], cluster=finance]]")
+
+1 Failed download:
+['RR.L']: possibly delisted; no price data found  (period=6mo) (Yahoo error = "Error occurred while retrieving timeseries, keys: [RedisKey [key=TF[1,YF_HIST,SPLITS][0P00007OU0], cluster=finance]]")
+$MKS.L: possibly delisted; no price data found  (period=6mo) (Yahoo error = "Error occurred while retrieving timeseries, keys: [RedisKey [key=TS:MKS.L:DELAYED, cluster=finance]]")
+
+1 Failed download:
+['MKS.L']: possibly delisted; no price data found  (period=6mo) (Yahoo error = "Error occurred while retrieving timeseries, keys: [RedisKey [key=TS:MKS.L:DELAYED, cluster=finance]]")
+$AAPL: possibly delisted; no price data found  (period=731d) (Yahoo error = "1h data not available for startTime=1722786925 and endTime=1785945325. The requested range must be within the last 730 days.")
+
+1 Failed download:
+['AAPL']: possibly delisted; no price data found  (period=731d) (Yahoo error = "1h data not available for startTime=1722786925 and endTime=1785945325. The requested range must be within the last 730 days.")
+Backtest data load failed for AAPL: No historical data returned
+$TSLA: possibly delisted; no price data found  (period=731d) (Yahoo error = "1h data not available for startTime=1722786926 and endTime=1785945326. The requested range must be within the last 730 days.")
+
+1 Failed download:
+['TSLA']: possibly delisted; no price data found  (period=731d) (Yahoo error = "1h data not available for startTime=1722786926 and endTime=1785945326. The requested range must be within the last 730 days.")
+Backtest data load failed for TSLA: No historical data returned
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: SHELL"}}}
+$SHELL: possibly delisted; no price data found  (period=2070d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['SHELL']: possibly delisted; no price data found  (period=2070d) (Yahoo error = "No data found, symbol may be delisted")
+Backtest data load failed for SHELL: No historical data returned
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: SHELL"}}}
+$SHELL: possibly delisted; no price data found  (period=2070d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['SHELL']: possibly delisted; no price data found  (period=2070d) (Yahoo error = "No data found, symbol may be delisted")
+Backtest data load failed for SHELL: No historical data returned
+{"timestamp": "2026-08-06T07:42:42.972031+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-06T07:42:42.972798+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-06T07:47:57.283816+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-06T07:47:57.284489+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T08:58:16.524464+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T08:58:16.524791+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "5a4a297b-c49b-4f1d-9e59-c889e745c929"}}
+{"timestamp": "2026-08-07T08:58:32.502184+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T08:58:32.503034+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "38e95c4e-04c2-4132-8d79-5d1c26bdeb6b"}}
+{"timestamp": "2026-08-07T08:58:43.769314+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-07T08:58:43.769553+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:21:48.689980+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:21:48.701510+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA"}}
+{"timestamp": "2026-08-07T09:21:48.701641+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA", "order_id": "5625df8b-1873-49a5-a315-42a7ecdc404e"}}
+{"timestamp": "2026-08-07T09:21:56.454711+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:21:56.465522+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA"}}
+{"timestamp": "2026-08-07T09:21:56.465649+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA", "order_id": "5a4d43a1-e749-4b52-a2dc-c1c5d968b42c"}}
+{"timestamp": "2026-08-07T09:22:13.272845+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:22:13.273055+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "5fe7097e-b82f-4d67-893c-faf3d1e75f00"}}
+{"timestamp": "2026-08-07T09:22:13.298482+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:22:13.309404+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA"}}
+{"timestamp": "2026-08-07T09:22:13.309518+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA", "order_id": "7c26c30f-32d0-42e5-9b96-133cb1a3df3d"}}
+{"timestamp": "2026-08-07T09:22:28.855226+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:22:28.855459+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "90561176-b028-462e-b0b3-9c27cb7d8ea7"}}
+{"timestamp": "2026-08-07T09:22:28.856099+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:22:28.890606+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA"}}
+{"timestamp": "2026-08-07T09:22:28.890725+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA", "order_id": "e2a1b39c-70a6-44b2-a5f5-35347f8704a2"}}
+{"timestamp": "2026-08-07T09:22:37.637770+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-07T09:22:37.638017+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:26:07.169495+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "RR"}}
+{"timestamp": "2026-08-07T09:26:32.829594+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "RR"}}
+{"timestamp": "2026-08-07T09:26:32.829778+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "RR", "order_id": "2294b1ba-5af7-4f53-93f1-fc409de16eaf"}}
+{"timestamp": "2026-08-07T09:44:24.797964+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:44:24.798676+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "51d99b6f-ffd2-433e-ba64-4ec5da5572c6"}}
+{"timestamp": "2026-08-07T09:44:24.799373+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:44:33.227601+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-07T09:44:33.227972+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+$AAPL: possibly delisted; no price data found  (period=366d) (Yahoo error = "Invalid input - interval=4hr is not supported. Valid intervals: [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 4h, 1d, 5d, 1wk, 1mo, 3mo]")
+
+1 Failed download:
+['AAPL']: possibly delisted; no price data found  (period=366d) (Yahoo error = "Invalid input - interval=4hr is not supported. Valid intervals: [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 4h, 1d, 5d, 1wk, 1mo, 3mo]")
+Backtest data load failed for AAPL: No historical data returned
+$TSLA: possibly delisted; no price data found  (period=366d) (Yahoo error = "Invalid input - interval=4hr is not supported. Valid intervals: [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 4h, 1d, 5d, 1wk, 1mo, 3mo]")
+
+1 Failed download:
+['TSLA']: possibly delisted; no price data found  (period=366d) (Yahoo error = "Invalid input - interval=4hr is not supported. Valid intervals: [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 4h, 1d, 5d, 1wk, 1mo, 3mo]")
+Backtest data load failed for TSLA: No historical data returned
+{"timestamp": "2026-08-07T09:53:23.865631+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:53:23.866053+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "960f68d0-a823-4761-932f-eb85f8808bec"}}
+{"timestamp": "2026-08-07T09:53:23.867097+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:54:30.863847+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T09:54:30.864603+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "9a0ecc2d-1469-49a4-b0b1-411f66ed5836"}}
+{"timestamp": "2026-08-07T09:54:30.865329+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:03:57.212814+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:03:57.213768+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "713cd547-2cfa-4872-8ca6-ebc0c21954b3"}}
+{"timestamp": "2026-08-07T10:03:57.214460+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:07:22.781638+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:07:22.782582+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "6c0c7f23-3451-4a12-af0a-724501631580"}}
+{"timestamp": "2026-08-07T10:07:22.783238+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:19:02.483321+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:19:02.484438+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "e8610694-1663-4d9c-b9e5-0c93f9f382a5"}}
+{"timestamp": "2026-08-07T10:19:02.485201+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:41:51.370156+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-07T10:41:51.371430+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:44:13.835394+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-07T10:44:13.836538+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:47:20.340149+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:47:20.341565+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL", "order_id": "5e129b79-c980-48e8-bc24-c06b12a2f261"}}
+{"timestamp": "2026-08-07T10:47:20.342376+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:48:18.897787+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-07T10:48:18.898896+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-07T10:48:18.900143+00:00", "level": "INFO", "module": "broker", "message": "paper broker execute requested", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA"}}
+{"timestamp": "2026-08-07T10:48:18.900231+00:00", "level": "INFO", "module": "broker", "message": "paper broker executed trade", "correlation_id": null, "thread": "main", "context": {"ticker": "NVDA", "order_id": "d7ad873b-8b8f-4288-b651-374c5547765b"}}
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: BARC"}}}
+$BARC: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['BARC']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+HTTP Error 404: {"quoteSummary":{"result":null,"error":{"code":"Not Found","description":"Quote not found for symbol: BARC"}}}
+$BARC: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['BARC']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+$BARC: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+
+1 Failed download:
+['BARC']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")

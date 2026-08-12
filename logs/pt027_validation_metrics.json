@@ -1,0 +1,30 @@
+{
+  "performance_metrics_ms": {
+    "dashboard_load_ms": 2.63,
+    "scanner_execution_ms": 118.34,
+    "backtest_execution_ms": 3.72,
+    "portfolio_refresh_ms": 0.02,
+    "journal_consume_ms": 16.62,
+    "journal_search_ms": 20.34,
+    "performance_dashboard_render_ms": 0.06
+  },
+  "integrity": {
+    "journal_no_duplicate_entries": true,
+    "journal_repeat_reads_stable": true,
+    "scanner_large_watchlist_processed": true,
+    "backtest_loaded_symbols_match": true,
+    "paper_cash_non_negative": true
+  },
+  "exports": {
+    "csv_non_empty": true,
+    "excel_non_empty": true,
+    "json_non_empty": true,
+    "json_contains_portfolio": true
+  },
+  "counts": {
+    "journal_entries": 2500,
+    "scanner_results": 500,
+    "backtest_symbols": 120,
+    "performance_trades": 0
+  }
+}

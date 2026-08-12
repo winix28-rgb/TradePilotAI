@@ -71,15 +71,37 @@ class Theme:
 
     TITLE_SIZE = "28px"
 
+    PAGE_TITLE_SIZE = "34px"
+
     PANEL_TITLE = "16px"
+
+    SECTION_TITLE_SIZE = "16px"
 
     KPI_TITLE = "12px"
 
-    KPI_VALUE = "24px"
+    KPI_LABEL = "14px"
+
+    KPI_VALUE = "30px"
+
+    KPI_SUPPORTING = "12px"
 
     BODY = "13px"
 
+    TABLE_HEADER = "13px"
+
+    TABLE_BODY = "14px"
+
     FONT = (
+        "-apple-system,"
+        "BlinkMacSystemFont,"
+        "'Segoe UI',"
+        "Roboto,"
+        "'Helvetica Neue',"
+        "Arial,"
+        "sans-serif"
+    )
+
+    FONT_DISPLAY = (
         "-apple-system,"
         "BlinkMacSystemFont,"
         "'Segoe UI',"
@@ -110,4 +132,32 @@ class Theme:
             "background": "#DBEAFE",
             "text": "#1E3A8A",
         },
+    }
+
+    SEMANTIC = {
+        "execute": "#16A34A",
+        "watch": "#F59E0B",
+        "reject": "#DC2626",
+        "insufficient_data": "#6B7280",
+        "bullish": "#16A34A",
+        "bearish": "#DC2626",
+        "neutral": "#6B7280",
+        "low": "#16A34A",
+        "medium": "#F59E0B",
+        "high": "#DC2626",
+    }
+
+    BUTTON = {
+        "primary": "#2563EB",
+        "success": "#16A34A",
+        "danger": "#DC2626",
+        "secondary": "#6B7280",
+    }
+
+    TABLE = {
+        "header_background": "#E9EEF5",
+        "row_alt_background": "#F8FAFC",
+        "row_hover_background": "#EEF4FF",
+        "row_selected_background": "#DBEAFE",
+        "border": "#D7DFEA",
     }

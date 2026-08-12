@@ -21,6 +21,10 @@ class StrategyEngine:
 
         self.strategy = RSIMeanReversionStrategy()
 
+    @property
+    def primary_timeframe(self) -> str:
+        return str(getattr(self.strategy, "primary_timeframe", ""))
+
     def evaluate(
         self,
         symbol,

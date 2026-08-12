@@ -8,6 +8,12 @@ def test_dispatcher_maps_sidebar_routes_to_existing_renderers():
     assert dashboard_app._resolve_renderer_key("trades") == "trade_history"
     assert dashboard_app._resolve_renderer_key("strategies") == "strategy"
     assert dashboard_app._resolve_renderer_key("risk") == "risk"
+    assert dashboard_app._resolve_renderer_key("performance") == "performance"
+    assert dashboard_app._resolve_renderer_key("reports") == "reports"
+    assert dashboard_app._resolve_renderer_key("validation") == "validation"
+    assert dashboard_app._resolve_renderer_key("system_status") == "system_status"
+    assert dashboard_app._resolve_renderer_key("paper_trading") == "paper_trading"
+    assert dashboard_app._resolve_renderer_key("trade_journal") == "trade_journal"
 
 
 def test_workspace_navigation_chrome_is_removed_before_rendering():

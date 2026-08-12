@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import streamlit as st
@@ -10,12 +10,14 @@ import streamlit as st
 from dashboard.layout import (
     card,
     empty_state,
+    render_decision_badge,
     render_desktop_layout,
     render_information_banner,
     render_kpi_card,
     render_panel_header,
     render_section,
     render_table,
+    score_rating,
     section,
     spacer,
 )
@@ -24,10 +26,17 @@ from dashboard.styles import apply_theme
 from dashboard.theme import Theme
 from tradepilotai_os.broker.paper_broker import PaperBroker
 from tradepilotai_os.orchestration.approval_queue import TradeApprovalQueue
+from tradepilotai_os.paper_trading import ExitEngine
+from tradepilotai_os.paper_trading import IntegratedPaperBroker
+from tradepilotai_os.paper_trading import JournalService
+from tradepilotai_os.paper_trading import PaperPortfolioEngine
+from tradepilotai_os.paper_trading import PositionMonitor
+from tradepilotai_os.paper_trading import PaperTradingService
 from tradepilotai_os.portfolio.portfolio_manager import PortfolioManager
 from tradepilotai_os.risk.module.service import RiskDashboardService
 from tradepilotai_os.risk.risk_engine import RiskEngine
 from tradepilotai_os.scanner import ScannerService
+from tradepilotai_os.version import VERSION
 
 
 def _ensure_dashboard_state(state: Any) -> Any:
@@ -67,6 +76,59 @@ def _ensure_dashboard_state(state: Any) -> Any:
         else:
             setattr(state, "broker", broker)
 
+    paper_portfolio_engine = getattr(state, "paper_portfolio_engine", None)
+    if paper_portfolio_engine is None:
+        paper_portfolio_engine = PaperPortfolioEngine(initial_capital=100000.0)
+        if isinstance(state, dict):
+            state["paper_portfolio_engine"] = paper_portfolio_engine
+        else:
+            setattr(state, "paper_portfolio_engine", paper_portfolio_engine)
+
+    paper_position_monitor = getattr(state, "paper_position_monitor", None)
+    if paper_position_monitor is None:
+        paper_position_monitor = PositionMonitor(portfolio_engine=paper_portfolio_engine)
+        if isinstance(state, dict):
+            state["paper_position_monitor"] = paper_position_monitor
+        else:
+            setattr(state, "paper_position_monitor", paper_position_monitor)
+
+    paper_exit_engine = getattr(state, "paper_exit_engine", None)
+    if paper_exit_engine is None:
+        paper_exit_engine = ExitEngine(portfolio_engine=paper_portfolio_engine)
+        if isinstance(state, dict):
+            state["paper_exit_engine"] = paper_exit_engine
+        else:
+            setattr(state, "paper_exit_engine", paper_exit_engine)
+
+    trade_journal_service = getattr(state, "trade_journal_service", None)
+    if trade_journal_service is None:
+        trade_journal_service = JournalService()
+        if isinstance(state, dict):
+            state["trade_journal_service"] = trade_journal_service
+        else:
+            setattr(state, "trade_journal_service", trade_journal_service)
+
+    integrated_paper_broker = getattr(state, "paper_execution_broker", None)
+    if integrated_paper_broker is None:
+        integrated_paper_broker = IntegratedPaperBroker(broker=broker, portfolio_engine=paper_portfolio_engine)
+        if isinstance(state, dict):
+            state["paper_execution_broker"] = integrated_paper_broker
+        else:
+            setattr(state, "paper_execution_broker", integrated_paper_broker)
+
+    paper_trading_service = getattr(state, "paper_trading_service", None)
+    if paper_trading_service is None:
+        paper_trading_service = PaperTradingService(
+            portfolio_engine=paper_portfolio_engine,
+            position_monitor=paper_position_monitor,
+            exit_engine=paper_exit_engine,
+            journal_service=trade_journal_service,
+        )
+        if isinstance(state, dict):
+            state["paper_trading_service"] = paper_trading_service
+        else:
+            setattr(state, "paper_trading_service", paper_trading_service)
+
     risk_engine = getattr(state, "risk_engine", None)
     if risk_engine is None:
         risk_engine = RiskEngine(account_balance=100000.0, risk_per_trade=0.01, max_position_size=1000.0)
@@ -91,7 +153,7 @@ def _ensure_dashboard_state(state: Any) -> Any:
     if approval_queue is None:
         approval_queue = TradeApprovalQueue(
             portfolio_manager=portfolio_manager,
-            broker=broker,
+            broker=integrated_paper_broker,
             risk_engine=risk_engine,
         )
         if isinstance(state, dict):
@@ -158,13 +220,38 @@ def render_dashboard(state: Any) -> None:
         div[data-testid="stTable"] {
             width: 100%;
         }
+        .tp-brief-header {
+            margin-top: -6px;
+        }
+        .tp-kpi-card.tp-hero-kpi .tp-kpi-value {
+            font-size: 120% !important;
+            line-height: 1.0;
+        }
+        .tp-kpi-level3 {
+            border: 1px solid #D9E2EC;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
+            padding: 12px 14px;
+        }
+        .tp-kpi-level3-label {
+            color: #64748B;
+            font-weight: 700;
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+        .tp-kpi-level3-value {
+            color: #0F172A;
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 1.2;
+        }
         </style>
         """,
         unsafe_allow_html=True,
     )
 
     _render_header(state)
-    st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:12px'></div>", unsafe_allow_html=True)
     _render_kpi_row(state)
 
     st.markdown("<div style='height:20px'></div>", unsafe_allow_html=True)
@@ -195,14 +282,16 @@ def render_dashboard(state: Any) -> None:
 def _render_header(state: Any) -> None:
     """Render the trading-terminal header with the requested status summary."""
     header_col, status_col = st.columns([0.72, 0.28], gap="small")
-    last_update = getattr(getattr(state, "market_scanner_service", None), "last_scan_time", None) or datetime.now().strftime("%d %b %Y %I:%M %p")
+    last_update = getattr(getattr(state, "market_scanner_service", None), "last_scan_time", None) or datetime.now(timezone.utc).strftime("%d %b %Y %I:%M %p UTC")
 
     with header_col:
+        st.markdown("<div class='tp-brief-header'>", unsafe_allow_html=True)
         st.markdown("<h1 class='tp-page-title'>TODAY'S TRADING BRIEF</h1>", unsafe_allow_html=True)
         st.markdown(
             "<div class='tp-page-caption'>AI-generated market assessment based on current market conditions, portfolio analysis and trading engine output.</div>",
             unsafe_allow_html=True,
         )
+        st.markdown("</div>", unsafe_allow_html=True)
 
     with status_col:
         with card():
@@ -284,36 +373,47 @@ def _render_kpi_row(state: Any) -> None:
     decision_value = str(top_result.get("signal") or "HOLD").upper()
     pending = getattr(approval_queue, "pending_trades", []) if approval_queue is not None else []
     decision_caption = f"Pending approvals | {len(pending or [])}"
+    semantic_decision = _semantic_decision_value(decision_value)
 
-    col1,col2,col3,col4,col5 = st.columns(5,gap="medium")
+    hero_left, hero_right = st.columns(2, gap="medium")
+    with hero_left:
+        st.markdown("<div class='tp-kpi-card tp-hero-kpi'>", unsafe_allow_html=True)
+        st.markdown("<div class='tp-kpi-title'>Decision</div>", unsafe_allow_html=True)
+        render_decision_badge(semantic_decision)
+        st.markdown(
+            f"<div class='tp-kpi-supporting'><div class='tp-kpi-supporting-line'>Recommendation: {decision_caption}</div></div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown("</div>", unsafe_allow_html=True)
+    with hero_right:
+        render_kpi_card(
+            title="Best Opportunity",
+            value=best_symbol,
+            footer_label="Opportunity Score",
+            footer_value=f"{float(best_score):.1f}",
+            footer_secondary_label="Quality",
+            footer_secondary_value=score_rating(best_score),
+            card_class="tp-hero-kpi",
+        )
 
-    with col1:
+    spacer(1)
+
+    lvl2_col1, lvl2_col2, lvl2_col3 = st.columns(3, gap="medium")
+    with lvl2_col1:
         render_kpi_card(
             title="Market Regime",
             value=market_regime,
             footer_label="Confidence",
             footer_value=f"{top_confidence}%",
         )
-
-    with col2:
+    with lvl2_col2:
         render_kpi_card(
             title="Recommended Strategy",
             value=strategy_name,
             footer_label="Confidence",
             footer_value=f"{top_confidence}%",
         )
-
-    with col3:
-        render_kpi_card(
-            title="Best Opportunity",
-            value=best_symbol,
-            footer_label="Opportunity Score",
-            footer_value=str(best_score),
-            footer_secondary_label="Portfolio Fit",
-            footer_secondary_value=str(portfolio_fit),
-        )
-
-    with col4:
+    with lvl2_col3:
         render_kpi_card(
             title="Risk Status",
             value=risk_value,
@@ -321,13 +421,26 @@ def _render_kpi_row(state: Any) -> None:
             footer_value=risk_caption,
         )
 
-    with col5:
-        render_kpi_card(
-            title="Decision",
-            value=decision_value,
-            footer_label="Recommendation",
-            footer_value=decision_caption,
-        )
+    spacer(1)
+
+    lvl3_col1, lvl3_col2, lvl3_col3, lvl3_col4 = st.columns(4, gap="small")
+    level3_items = [
+        ("Confidence", f"{top_confidence}%"),
+        ("Opportunity Score", str(best_score)),
+        ("Portfolio Fit", str(portfolio_fit)),
+        ("Decision Footer", decision_caption),
+    ]
+    for col, (label, value) in zip((lvl3_col1, lvl3_col2, lvl3_col3, lvl3_col4), level3_items):
+        with col:
+            st.markdown(
+                f"""
+                <div class='tp-kpi-level3'>
+                    <div class='tp-kpi-level3-label'>{label}</div>
+                    <div class='tp-kpi-level3-value'>{value}</div>
+                </div>
+                """,
+                unsafe_allow_html=True,
+            )
 
 
 def _render_panel(title: str, renderer: Any, state: Any) -> None:
@@ -759,124 +872,86 @@ def _pending_trade_count(state: Any) -> str:
     return "0"
 
 
+def _semantic_decision_value(decision: str) -> str:
+    normalized = str(decision or "").strip().upper()
+    mapping = {
+        "BUY": "EXECUTE",
+        "HOLD": "WATCH",
+        "SELL": "REJECT",
+        "EXECUTE": "EXECUTE",
+        "WATCH": "WATCH",
+        "REJECT": "REJECT",
+    }
+    return mapping.get(normalized, "INSUFFICIENT_DATA")
+
+
 def render_system_status(state: Any) -> None:
     """Render the system status section using the existing state structure."""
-    controller = getattr(state, "controller", None)
-    live_service = getattr(state, "live_strategy_service", None)
-    demo_service = getattr(state, "demo_signal_service", None)
-    scanner_service = getattr(state, "market_scanner_service", None)
-    broker = getattr(state, "broker", None)
-    performance = getattr(state, "performance", None)
+    from tradepilotai_os.validation import run_validation_suite
 
-    status_items = [
-        ("Trading Engine", _service_name(controller)),
-        ("Broker Connection", _connection_status(state)),
-        ("Trading Mode", _mode_value(state)),
-        ("Broker", _service_name(broker) or _service_name(live_service)),
-        ("Diagnostics", _diagnostic_value(performance)),
+    suite = run_validation_suite()
+    module_map = {module.name: module for module in suite.modules}
+
+    def _status_row(component: str, module_name: str) -> dict[str, str]:
+        module = module_map.get(module_name)
+        if module is None:
+            return {
+                "Component": component,
+                "Status": suite.overall_status,
+                "Last Validation": suite.generated_at,
+                "Version": VERSION,
+                "Test Count": "0",
+                "Pass Rate": "0.0%",
+            }
+
+        pass_rate = (module.passed_checks / module.total_checks) * 100.0 if module.total_checks else 0.0
+        return {
+            "Component": component,
+            "Status": module.status,
+            "Last Validation": suite.generated_at,
+            "Version": VERSION,
+            "Test Count": str(module.total_checks),
+            "Pass Rate": f"{pass_rate:.1f}%",
+        }
+
+    rows = [
+        _status_row("Market Data", "Indicator Validation"),
+        _status_row("Scanner", "Platform Validation"),
+        _status_row("Decision Engine", "Strategy Validation"),
+        _status_row("Strategy Library", "Strategy Validation"),
+        _status_row("Backtesting", "Regression Validation"),
+        _status_row("Paper Trading", "Trade Validation"),
+        _status_row("Trade Journal", "Trade Validation"),
+        _status_row("Performance", "Performance Validation"),
+        _status_row("Validation Framework", "Platform Validation"),
+        {
+            "Component": "Overall System Health",
+            "Status": suite.overall_status,
+            "Last Validation": suite.generated_at,
+            "Version": VERSION,
+            "Test Count": str(suite.total_checks),
+            "Pass Rate": f"{suite.overall_score:.1f}%",
+        },
     ]
 
     render_desktop_layout()
-    render_panel_header("Settings", status="LIVE")
+    render_panel_header("SYSTEM STATUS", status=suite.overall_status)
 
-    kpi1, kpi2, kpi3, kpi4, kpi5 = st.columns(5, gap="small")
-    with kpi1:
-        render_kpi_card(
-            title="Trading Engine",
-            value=_service_name(controller),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
-    with kpi2:
-        render_kpi_card(
-            title="Broker Connection",
-            value=_connection_status(state),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
-    with kpi3:
-        render_kpi_card(
-            title="Trading Mode",
-            value=_mode_value(state),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
-    with kpi4:
-        render_kpi_card(
-            title="Broker",
-            value=_service_name(broker) or _service_name(live_service),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
-    with kpi5:
-        render_kpi_card(
-            title="Diagnostics",
-            value=_diagnostic_value(performance),
-            footer_label="Setting",
-            footer_value="Runtime",
-        )
+    k1, k2, k3, k4 = st.columns(4, gap="small")
+    with k1:
+        render_kpi_card("Components", str(len(rows) - 1), "Type", "Subsystems")
+    with k2:
+        render_kpi_card("Validation Checks", str(suite.total_checks), "Passed", str(suite.passed_checks))
+    with k3:
+        render_kpi_card("Pass Rate", f"{suite.overall_score:.1f}%", "Status", suite.overall_status)
+    with k4:
+        render_kpi_card("Version", VERSION, "Generated", suite.generated_at)
 
-    main_left, main_right = st.columns([0.6, 0.4], gap="small")
-    with main_left:
-        render_section(
-            "Runtime Status",
-            lambda: render_table(
-                rows=[
-                    {"Setting": label, "Value": value}
-                    for label, value in status_items
-                ],
-                columns=["Setting", "Value"],
-            ),
-        )
-    with main_right:
-        render_section(
-            "Connection Details",
-            lambda: render_table(
-                rows=[
-                    {"Detail": "Broker Connection", "Value": _connection_status(state)},
-                    {"Detail": "Trading Mode", "Value": _mode_value(state)},
-                    {"Detail": "Broker", "Value": _service_name(broker) or _service_name(live_service)},
-                    {"Detail": "Diagnostics", "Value": _diagnostic_value(performance)},
-                ],
-                columns=["Detail", "Value"],
-            ),
-        )
-
-    bottom_left, bottom_right = st.columns([0.5, 0.5], gap="small")
-    with bottom_left:
-        render_section(
-            "Engine Snapshot",
-            lambda: render_table(
-                rows=[
-                    {"Field": "Trading Engine", "Value": _service_name(controller)},
-                    {"Field": "Broker", "Value": _service_name(broker) or _service_name(live_service)},
-                ],
-                columns=["Field", "Value"],
-            ),
-        )
-    with bottom_right:
-        render_section(
-            "Diagnostics Snapshot",
-            lambda: render_table(
-                rows=[
-                    {"Field": "Broker Connection", "Value": _connection_status(state)},
-                    {"Field": "Trading Mode", "Value": _mode_value(state)},
-                    {"Field": "Diagnostics", "Value": _diagnostic_value(performance)},
-                ],
-                columns=["Field", "Value"],
-            ),
-        )
-
-    render_information_banner(
-        "System Notes",
-        "\n".join(
-            [
-                f"Trading Engine: {_service_name(controller)}",
-                f"Broker Connection: {_connection_status(state)}",
-                f"Trading Mode: {_mode_value(state)}",
-                f"Broker: {_service_name(broker) or _service_name(live_service)}",
-                f"Diagnostics: {_diagnostic_value(performance)}",
-            ]
+    render_section(
+        "System Health Matrix",
+        lambda: render_table(
+            rows=rows,
+            columns=["Component", "Status", "Last Validation", "Version", "Test Count", "Pass Rate"],
         ),
     )
 
@@ -983,8 +1058,9 @@ def _resolve_renderer_key(page_key: str) -> str:
         "trades": "trade_history",
         "strategies": "strategy",
         "holdings": "portfolio",
-        "reports": "performance",
+        "reports": "reports",
         "settings": "settings",
+        "system_status": "system_status",
     }
     return aliases.get(page_key, page_key)
 
@@ -997,11 +1073,16 @@ def _dispatch_page(page_key: str, state: Any) -> None:
         render_backtesting_workspace,
         render_dashboard_workspace,
         render_live_trading_workspace,
+        render_performance_workspace,
+        render_paper_trading_workspace,
         render_portfolio_workspace,
         render_reports_workspace,
         render_risk_workspace,
         render_scanner_workspace,
         render_settings_workspace,
+        render_trade_journal_workspace,
+        render_validation_workspace,
+        render_system_status_workspace,
         render_strategy_workspace,
         render_trade_history_workspace,
     )
@@ -1012,8 +1093,13 @@ def _dispatch_page(page_key: str, state: Any) -> None:
         "portfolio": lambda: render_portfolio_workspace(state),
         "orders": lambda: render_live_trading_workspace(state),
         "trade_history": lambda: render_trade_history_workspace(state),
-        "performance": lambda: render_reports_workspace(state),
+        "performance": lambda: render_performance_workspace(state),
+        "reports": lambda: render_reports_workspace(state),
         "backtesting": lambda: render_backtesting_workspace(state),
+        "validation": lambda: render_validation_workspace(state),
+        "system_status": lambda: render_system_status_workspace(state),
+        "paper_trading": lambda: render_paper_trading_workspace(state),
+        "trade_journal": lambda: render_trade_journal_workspace(state),
         "strategy": lambda: render_strategy_workspace(state),
         "risk": lambda: render_risk_workspace(state),
         "settings": lambda: render_settings_workspace(state),

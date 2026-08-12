@@ -35,3 +35,31 @@ def test_render_sidebar_switches_page_via_radio_selection(monkeypatch):
 
     assert page == "scanner"
     assert st.session_state.current_page == "scanner"
+
+
+def test_navigation_includes_validation_workspace():
+    st.session_state.clear()
+    manager = navigation_module.NavigationManager()
+
+    assert "validation" in [item.key for item in manager.pages()]
+
+
+def test_navigation_includes_paper_trading_workspace():
+    st.session_state.clear()
+    manager = navigation_module.NavigationManager()
+
+    assert "paper_trading" in [item.key for item in manager.pages()]
+
+
+def test_navigation_includes_trade_journal_workspace():
+    st.session_state.clear()
+    manager = navigation_module.NavigationManager()
+
+    assert "trade_journal" in [item.key for item in manager.pages()]
+
+
+def test_navigation_includes_system_status_workspace():
+    st.session_state.clear()
+    manager = navigation_module.NavigationManager()
+
+    assert "system_status" in [item.key for item in manager.pages()]

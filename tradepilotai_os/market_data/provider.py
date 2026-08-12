@@ -19,7 +19,7 @@ class MarketDataProvider(ABC):
         self,
         symbol: str,
         period: str = "6mo",
-        interval: str = "1d",
+        interval: str | None = None,
     ):
         """
         Return historical OHLCV data.

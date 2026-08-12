@@ -50,6 +50,20 @@ class DecisionResult:
     decision_explanation: dict[str, Any] = field(default_factory=dict)
     assessment_breakdown: dict[str, float] = field(default_factory=dict)
 
+    def to_payload(self) -> dict[str, Any]:
+        return {
+            "decision_score": self.decision_score,
+            "decision": self.decision,
+            "decision_quality": self.decision_quality,
+            "recommendation_stability": self.recommendation_stability,
+            "confidence": self.confidence,
+            "coverage": self.coverage,
+            "reasons_for": list(self.reasons_for),
+            "reasons_against": list(self.reasons_against),
+            "decision_explanation": dict(self.decision_explanation),
+            "assessment_breakdown": dict(self.assessment_breakdown),
+        }
+
 
 class DecisionEngine:
     """Aggregate existing assessments into Rule Book v1.0 recommendations."""

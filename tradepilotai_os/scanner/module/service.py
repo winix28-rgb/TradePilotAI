@@ -47,6 +47,12 @@ class ScannerService:
         self._scan_state = "running"
         symbols = list(watchlist or self.market_scanner.get_watchlist() or [])
         self._last_watchlist = symbols
+        strategy = getattr(self.strategy_engine, "strategy", None)
+        interval = str(getattr(strategy, "primary_timeframe", "")).strip() if strategy is not None else ""
+        if not interval:
+            interval = str(getattr(self.strategy_engine, "primary_timeframe", "")).strip()
+        if not interval:
+            raise ValueError("Scanner strategy must declare a primary timeframe.")
 
         started_at = time.monotonic()
         results: list[dict[str, Any]] = []
@@ -57,7 +63,7 @@ class ScannerService:
 
         for symbol in symbols:
             try:
-                history = self.data_provider.history(symbol, period="6mo", interval="1d")
+                history = self.data_provider.history(symbol, period="6mo", interval=interval)
                 if history is None or history.empty or len(history) < 30:
                     raise ValueError("Not enough market data")
 
@@ -129,7 +135,7 @@ class ScannerService:
 
         scan_duration = round(time.monotonic() - started_at, 2)
         self.scan_duration = f"{scan_duration:.2f}s"
-        self.last_scan_time = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+        self.last_scan_time = datetime.now(timezone.utc).isoformat(timespec="seconds")
         self.signals_found = len(results)
         self.buy_signals = len(buy_candidates)
         self.sell_signals = len(sell_candidates)
@@ -146,6 +152,7 @@ class ScannerService:
                 "sell_signals": self.sell_signals,
                 "watch_list_count": self.watch_list_count,
                 "last_scan_time": self.last_scan_time,
+                "timeframe": interval,
             },
             "pipeline": {
                 "market_data": "Complete",
@@ -183,14 +190,20 @@ class ScannerService:
             "ticker": symbol,
             "symbol": symbol,
             "signal": signal_label,
+            "decision": score_payload.get("decision_result", {}).get("decision"),
             "confidence": int(signal.confidence),
             "score": int(signal.confidence),
             "rsi": round(signal.rsi, 1),
+            "ema12": round(signal.ema12, 2),
+            "ema26": round(signal.ema26, 2),
             "trend": trend,
             "risk": self._risk_rating(signal.confidence, volatility),
             "reason": reason,
+            "reasons": list(signal.reasons),
             "opportunity": reason,
             "price": round(signal.price, 2),
+            "stop_loss": round(float(getattr(signal, "stop_loss", 0.0)), 2) if getattr(signal, "stop_loss", None) is not None else None,
+            "target": round(float(getattr(signal, "target", 0.0)), 2) if getattr(signal, "target", None) is not None else None,
             "overall_score": score_payload["overall_score"],
             "score_breakdown": score_payload["score_breakdown"],
             "ranking_reason": score_payload["ranking_reason"],
@@ -199,6 +212,12 @@ class ScannerService:
             "risk_score": score_payload["risk_score"],
             "portfolio_score": score_payload["portfolio_score"],
             "market_score": score_payload["market_score"],
+            "technical_component": score_payload.get("technical"),
+            "strategy_component": score_payload.get("strategy"),
+            "risk_component": score_payload.get("risk"),
+            "portfolio_component": score_payload.get("portfolio"),
+            "market_component": score_payload.get("market"),
+            "decision_result": score_payload.get("decision_result"),
             "raw": signal,
         }
 
