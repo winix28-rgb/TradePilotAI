@@ -4,6 +4,8 @@ TradePilotAI OS
 Supply & Demand Strategy Orchestrator
 ===========================================================
 
+STEP 4 - PORTFOLIO RISK CONTROL
+
 Connects the complete Supply & Demand strategy flow:
 
     Zone
@@ -18,16 +20,46 @@ Connects the complete Supply & Demand strategy flow:
       ↓
     Trade Levels
       ↓
+    Portfolio Risk Assessment
+      ↓
     Trade Lifecycle
       ↓
     Stop Loss / Take Profit
       ↓
     Trade Closed
 
-This orchestrator coordinates the existing specialist
+The orchestrator coordinates the existing specialist
 engines.
 
-It does NOT redefine their strategy rules.
+IMPORTANT
+---------
+
+This module does NOT redefine any S&D strategy rules.
+
+Existing rules remain unchanged:
+
+    Maximum open trades:
+        5
+
+    Maximum total portfolio risk:
+        5%
+
+    Entry pattern:
+        Existing Entry Engine rules
+
+    Trade start:
+        OPEN of candle following entry candle
+
+    Stop loss:
+        Existing Trade Level Engine rules
+
+    Take profit:
+        Existing Trade Level Engine rules
+
+The PortfolioRiskController determines whether a proposed
+trade may be added to the currently open portfolio.
+
+Broker execution is NOT handled here.
 """
 
 from __future__ import annotations
@@ -57,6 +89,11 @@ from .trade_levels import (
     TradeLevels,
 )
 
+from tradepilotai_os.risk.portfolio_risk import (
+    PortfolioRiskAssessment,
+    PortfolioRiskController,
+)
+
 from tradepilotai_os.trading.trade_lifecycle import (
     TradeCandle,
     TradeLifecycle,
@@ -68,10 +105,11 @@ class SupplyDemandOrchestrator:
     """
     Coordinate the Supply/Demand specialist engines.
 
-    The orchestrator is responsible for connecting the
-    strategy components.
+    STEP 4 adds the existing PortfolioRiskController as a
+    gate between calculated trade levels and the lifecycle
+    trade.
 
-    Broker execution is deliberately NOT handled here.
+    The orchestrator does not create new strategy rules.
     """
 
     def __init__(
@@ -83,6 +121,9 @@ class SupplyDemandOrchestrator:
         ) = None,
         lifecycle_engine: (
             TradeLifecycleEngine | None
+        ) = None,
+        portfolio_risk_controller: (
+            PortfolioRiskController | None
         ) = None,
         state: SupplyDemandOrchestratorState | None = None,
     ) -> None:
@@ -113,6 +154,12 @@ class SupplyDemandOrchestrator:
             else TradeLifecycleEngine()
         )
 
+        self.portfolio_risk_controller = (
+            portfolio_risk_controller
+            if portfolio_risk_controller is not None
+            else PortfolioRiskController()
+        )
+
         self.state = (
             state
             if state is not None
@@ -122,6 +169,10 @@ class SupplyDemandOrchestrator:
         self.retest_candles: list[
             RetestCandle
         ] = []
+
+        self.last_risk_assessment: (
+            PortfolioRiskAssessment | None
+        ) = None
 
     # =========================================================
     # ZONE
@@ -347,6 +398,11 @@ class SupplyDemandOrchestrator:
         """
         Calculate trade levels using the actual trade-start
         price.
+
+        The supplied risk_value is carried through to the
+        TradeLevels object.
+
+        No new risk rule is introduced here.
         """
 
         if self.state.active_zone is None:
@@ -386,20 +442,63 @@ class SupplyDemandOrchestrator:
         return levels
 
     # =========================================================
-    # OPEN LIFECYCLE TRADE
+    # STEP 4 - PORTFOLIO RISK ASSESSMENT
+    # =========================================================
+
+    def assess_portfolio_risk(
+        self,
+        proposed_risk_value: float,
+        current_open_trades: int,
+        current_risk_value: float,
+    ) -> PortfolioRiskAssessment:
+        """
+        Assess whether the proposed trade can be added to the
+        currently open portfolio.
+
+        The existing PortfolioRiskController enforces:
+
+            Maximum open trades = 5
+            Maximum total portfolio risk = 5%
+
+        No other risk rule is applied here.
+        """
+
+        if self.state.trade_levels is None:
+            raise ValueError(
+                "Cannot assess portfolio risk before "
+                "trade levels have been calculated."
+            )
+
+        assessment = (
+            self.portfolio_risk_controller.assess(
+                current_open_trades=current_open_trades,
+                current_risk_value=current_risk_value,
+                proposed_risk_value=proposed_risk_value,
+            )
+        )
+
+        self.last_risk_assessment = assessment
+
+        return assessment
+
+    # =========================================================
+    # STEP 4 - OPEN APPROVED TRADE
     # =========================================================
 
     def open_trade(
         self,
         risk_value: float,
+        current_open_trades: int = 0,
+        current_risk_value: float = 0.0,
     ) -> TradeLifecycle:
         """
-        Open the TradeLifecycleEngine trade using the already
-        calculated S&D trade levels.
+        Assess portfolio risk and open the lifecycle trade
+        only when the proposed trade is permitted.
 
-        The trade entry is the actual trade-start price.
+        The risk controller is checked BEFORE the lifecycle
+        trade is created.
 
-        The lifecycle engine requires a positive risk value.
+        Existing S&D rules remain unchanged.
         """
 
         if self.state.active_zone is None:
@@ -434,6 +533,21 @@ class SupplyDemandOrchestrator:
         if risk_value <= 0:
             raise ValueError(
                 "Risk value must be greater than zero."
+            )
+
+        # -----------------------------------------------------
+        # Portfolio risk gate
+        # -----------------------------------------------------
+
+        assessment = self.assess_portfolio_risk(
+            proposed_risk_value=risk_value,
+            current_open_trades=current_open_trades,
+            current_risk_value=current_risk_value,
+        )
+
+        if not assessment.permitted:
+            raise ValueError(
+                assessment.reason
             )
 
         levels = self.state.trade_levels
