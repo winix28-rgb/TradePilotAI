@@ -598,3 +598,7 @@ $BARC: possibly delisted; no price data found  (period=366d) (Yahoo error = "No 
 
 1 Failed download:
 ['BARC']: possibly delisted; no price data found  (period=366d) (Yahoo error = "No data found, symbol may be delisted")
+{"timestamp": "2026-08-20T10:51:44.558917+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-20T10:51:44.559775+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
+{"timestamp": "2026-08-20T11:11:55.811254+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline started", "correlation_id": null, "thread": "main", "context": null}
+{"timestamp": "2026-08-20T11:11:55.812803+00:00", "level": "INFO", "module": "orchestration", "message": "orchestrator pipeline completed", "correlation_id": null, "thread": "main", "context": {"ticker": "AAPL"}}
